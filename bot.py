@@ -2,15 +2,22 @@ import discord
 from discord.ext import commands
 import time
 import threading
-import zmq
+from flask import Flask, render_template
 
-TOKEN = open("token.txt", "r").read()
+app= Flask(__name__)
+
+def flaskThread():
+    app.run()
+
+#TOKEN = open("C://Users//mattd//OneDrive//Coding//Bertie Bot V3//BertieBotV3//token.txt", "r").read()
+TOKEN = 'MjcxNzY2NTc5NTc2ODMyMDAw.Dy16UA.kUYz2bKmwGsW9vnJvyKNT1taCfs'
 
 client = commands.Bot(command_prefix = '.')
 
 @client.event
 async def on_ready():
     print('Bot is ready')
+    webThread.start()
 
 @client.command(pass_context=True)
 async def echo(ctx):
@@ -24,36 +31,15 @@ async def echo(ctx):
 async def oof():
     await client.say('Testing')
 
+@app.route("/")
+def homePage():
+    allChannelz = client.get_all_channels()
+    return render_template("home.html", client=client, allChannelz=allChannelz)
 
-def TCP():
-    context = zmq.Context()
-    socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:5555")
+@app.context_processor
+def inject_channels():
+    allChannels = client.get_all_channels()
+    return dict(allChannels=allChannels) 
 
-    while True:
-        #  Wait for next request from client
-        messageraw = str(socket.recv())[2:-1]
-        message = messageraw.split(" ")
-
-        # ALLCHANNELS, SPECIFICCHANNEL, USER, ROLE
-        if message[0].upper() == 'ALLCHANNELS' and message[1].upper() == 'FROM':
-            server = client.get_server(message[2])
-            results = server.channels
-            for x in results:
-                print(x.name)
-
-            socket.send(b'It Works!')
-
-        elif message[0].upper() == 'SPECIFICCHANNEL':
-            socket.send(b'SPECIFICCHANNEL')
-        elif message[0].upper() == 'USER':
-            socket.send(b'USER')
-        elif message[0].upper() == 'ROLE':
-            socket.send(b'ROLE')
-        else:
-            socket.send(b'Server Error')
-
-tcpThread = threading.Thread(target=TCP)
-tcpThread.start()
-
+webThread = threading.Thread(target=flaskThread)
 client.run(TOKEN)

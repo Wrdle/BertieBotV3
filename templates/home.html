@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Hello World! I am alive!</h1>
+    <select>
+        {% for channel in allChannelz %}
+            <option>
+                {{channel.name}}
+            </option>
+        {% endfor %}
+    </select>
+{% endblock content %}
