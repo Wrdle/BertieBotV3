@@ -2,7 +2,9 @@ import discord
 from discord.ext import commands
 import time
 import threading
-from flask import Flask, render_template
+import datetime
+import json
+from flask import Flask, render_template, request
 
 app= Flask(__name__)
 
@@ -18,6 +20,25 @@ client = commands.Bot(command_prefix = '.')
 async def on_ready():
     print('Bot is ready')
     webThread.start()
+
+@client.event
+async def on_message(message):
+    newMessage = {
+        "id": message.id,
+        "time": str(message.timestamp),
+        "channel": message.channel.id,
+        "user": message.author.id,
+        "content": message.content,
+        "tts": str(message.tts),
+        "attachments": str(message.attachments)
+    }
+    with open('dserverconfig/ServerChatLog.json') as f:
+        data = json.load(f)
+    data.append(newMessage)
+
+    with open('dserverconfig/ServerChatLog.json', 'w') as f:
+        json.dump(data, f)
+
 
 @client.command(pass_context=True)
 async def echo(ctx):
@@ -35,6 +56,19 @@ async def oof():
 def homePage():
     allChannelz = client.get_all_channels()
     return render_template("home.html", client=client, allChannelz=allChannelz)
+
+@app.route("/channel", methods=['GET'])
+def channelPage():
+    currentChannel = client.get_channel(request.values.get('channelid'))
+    with open('dserverconfig/ServerChatLog.json') as f:
+        data = json.load(f)
+
+    channelLog = []
+    for message in data:
+        if message["channel"] == currentChannel.id:
+            channelLog.append(message)
+    return render_template("channel.html", client=client, channelLog=channelLog, currentChannel=currentChannel)
+
 
 @app.context_processor
 def inject_channels():

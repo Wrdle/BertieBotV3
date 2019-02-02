@@ -64,7 +64,7 @@
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Channels:</h6>
             {% for channel in allChannels %}
-              <a class="collapse-item" href="#">{{channel.name}}</a>
+              <a class="collapse-item" href="/channel?channelid={{channel.id}}">{{channel.name}}</a>
             {% endfor %}
           </div>
         </div>
@@ -344,7 +344,7 @@
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Your Website 2019</span>
+            <span>Copyright &copy; Bertie Bot 2019</span>
           </div>
         </div>
       </footer>
