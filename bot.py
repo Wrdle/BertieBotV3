@@ -64,7 +64,7 @@ def channelPage():
         data = json.load(f)
 
     channelLog = []
-    for message in data:
+    for message in reversed(data):
         if message["channel"] == currentChannel.id:
             channelLog.append(message)
     return render_template("channel.html", client=client, channelLog=channelLog, currentChannel=currentChannel)
