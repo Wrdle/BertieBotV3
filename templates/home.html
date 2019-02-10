@@ -2,9 +2,10 @@
 {% block content %}
     <h1>Hello World! I am alive!</h1>
     <select>
-        {% for channel in allChannelz %}
+        {% for server in allServers %}
             <option>
-                {{channel.name}}
+                {{server.name}}
+                {{server.id}}
             </option>
         {% endfor %}
     </select>

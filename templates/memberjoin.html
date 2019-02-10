@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+    <!-- Custom styles for this page -->
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <div class="row">
+        <div class="card col-md-4 shadow mb-4">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold text-primary">Auto Role</h5>
+            </div>
+            <div class="card-body">
+               <p>Assigns new users a selected role automatically</p>
+                <form action="" method="get">
+                    <span><b>Role: </b></span>
+                    <select name="autoRole">
+                        {% for role in allRoles %}
+                            <option {% if role == currentDefaultRole %} selected="selected" {% endif %} value="{{role.id}}">{{role.name}}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                    <input type="submit" class="btn btn-success" name="SaveAutoRole" value="&nbsp; Save &nbsp;">
+                </form>
+            </div>
+        </div>
+        <div class="card col-md-8 shadow mb-4">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold text-primary">Custom Join Messages</h5>
+            </div>
+            <div class="card-body">
+                <p>Sets custom random join messages</p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
