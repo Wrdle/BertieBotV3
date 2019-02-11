@@ -7,6 +7,7 @@ import json
 import configFunctions
 import extraFunctions
 from flask import Flask, render_template, request
+from random import *
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ def flaskThread():
 TOKEN = 'MjcxNzY2NTc5NTc2ODMyMDAw.Dy16UA.kUYz2bKmwGsW9vnJvyKNT1taCfs'
 
 serverConfig = configFunctions.reloadServerConfig()
+welcomeMessages = configFunctions.reloadWelcomeMessages()
 client = commands.Bot(command_prefix = serverConfig['commandPrefix'])
 serverid = open("dserverconfig/serverid.txt", "r").read()
 
@@ -34,11 +36,21 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     serverConfig = configFunctions.reloadServerConfig()
+    welcomeMessages = configFunctions.reloadWelcomeMessages()
     try:
         if (serverConfig['defaultRole'] != None ):
             await client.add_roles(member, extraFunctions.getRole(member.server, serverConfig['defaultRole']))
     except:
         await client.send_message(member.server.owner, "There was an error adding the default role to a newly joined server member. Please login to the web panel and ensure that the role you have chosen still exists")
+    
+    if len(welcomeMessages) > 0:
+        if len(welcomeMessages) == 1:
+            message = welcomeMessages[0]['content']
+            await client.send_message(member.server.default_channel, message)
+        else:
+            messageToShow = welcomeMessages[randint(0, len(welcomeMessages) - 1)]
+            await client.send_message(member.server.default_channel, messageToShow['content'])
+
 
 @client.command(pass_context=True)
 async def echo(ctx):

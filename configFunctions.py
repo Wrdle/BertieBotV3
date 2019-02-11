@@ -15,3 +15,14 @@ def reloadServerConfig():
             }
             json.dump(serverConfig, f)
     return serverConfig
+
+def reloadWelcomeMessages():
+    welcomeMessages = []
+    try:
+        with open('dserverconfig/WelcomeMessages.json') as f:
+            welcomeMessages = json.load(f)
+    except:
+        print('Error opening welcome messages. File may not exist.')
+        with open ('dserverconfig/WelcomeMessages.json', 'w+') as f:
+            json.dump(welcomeMessages, f)
+    return welcomeMessages
