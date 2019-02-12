@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Hello World! I am alive!</h1>
+    <h1>Hello World! I am alive! {{totalMessagesPastMonth}}</h1>
     <select>
         {% for server in allServers %}
             <option>

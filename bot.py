@@ -72,7 +72,7 @@ async def allroles(ctx):
 async def on_message(message):
     newMessage = {
         "id": message.id,
-        "time": str(message.timestamp),
+        "time": str(datetime.datetime.now().strftime("%d/%m/%y %I:%M%p")),
         "channel": message.channel.id,
         "user": message.author.id,
         "content": message.content,
@@ -92,7 +92,14 @@ async def on_message(message):
 @app.route("/")
 def homePage():
     allChannelz = client.get_all_channels()
-    return render_template("home.html", client=client, allChannelz=allChannelz)
+
+    totalMessagesPastMonth = 0
+    with open('dserverconfig/ServerChatLog.json') as f:
+        messages = json.load(f)
+        for message in messages:
+            if datetime.datetime.now() - datetime.datetime.strptime(message['time'], "%d/%m/%y %I:%M%p") < datetime.timedelta(days=30):
+                totalMessagesPastMonth += 1
+    return render_template("home.html", client=client, allChannelz=allChannelz, totalMessagesPastMonth=totalMessagesPastMonth)
 
 @app.route("/channel", methods=['GET'])
 def channelPage():
@@ -109,6 +116,7 @@ def channelPage():
 @app.route("/memberjoin", methods=['GET'])
 def memberJoinPage():
     server = client.get_server(serverid)
+    serverConfig = configFunctions.reloadServerConfig()
     autoRole = request.args.get("autoRole")
     if autoRole is not None:
         with open('dserverconfig/ServerConfig.json') as f:
