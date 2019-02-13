@@ -4,10 +4,13 @@ import time
 import threading
 import datetime
 import json
-import configFunctions
-import extraFunctions
 from flask import Flask, render_template, request
 from random import *
+
+#CUSTOM
+import configFunctions
+import extraFunctions
+import auditlog
 
 app = Flask(__name__)
 
@@ -35,6 +38,7 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
+    auditlog.newMemberJoin(member, datetime.datetime.now())
     serverConfig = configFunctions.reloadServerConfig()
     welcomeMessages = configFunctions.reloadWelcomeMessages()
     try:
@@ -51,6 +55,9 @@ async def on_member_join(member):
             messageToShow = welcomeMessages[randint(0, len(welcomeMessages) - 1)]
             await client.send_message(member.server.default_channel, messageToShow['content'])
 
+@client.event
+async def on_member_remove(member):
+    auditlog.memberLeave(member, datetime.datetime.now())
 
 @client.command(pass_context=True)
 async def echo(ctx):
@@ -117,6 +124,9 @@ def channelPage():
 def memberJoinPage():
     server = client.get_server(serverid)
     serverConfig = configFunctions.reloadServerConfig()
+    welcomeMessages = configFunctions.reloadWelcomeMessages()
+
+
     autoRole = request.args.get("autoRole")
     if autoRole is not None:
         with open('dserverconfig/ServerConfig.json') as f:
@@ -126,9 +136,9 @@ def memberJoinPage():
         with open('dserverconfig/ServerConfig.json', 'w') as f:
             json.dump(config, f)
         serverConfig = configFunctions.reloadServerConfig()
-
     currentDefaultRole = extraFunctions.getRole(server, serverConfig["defaultRole"])
-    return render_template("memberjoin.html", client=client, allRoles = server.roles, currentDefaultRole=currentDefaultRole, data=request.values)
+
+    return render_template("memberjoin.html", client=client, allRoles = server.roles, currentDefaultRole=currentDefaultRole, data=request.values, welcomeMessages=welcomeMessages)
     
 
 @app.context_processor
