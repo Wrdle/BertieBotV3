@@ -64,7 +64,6 @@ async def echo(ctx):
     await client.say('ServerID: ' + ctx.message.server.id)
     await client.say('ChannelID: ' + ctx.message.channel.id)
     channel = client.get_channel(ctx.message.channel.id)
-    print(type(channel.id))
     await client.send_message(channel, 'oof')
 
 @client.command(pass_context=True)
@@ -133,7 +132,6 @@ def channelPage():
 def memberJoinPage():
     server = client.get_server(serverid)
     serverConfig = configFunctions.reloadServerConfig()
-    welcomeMessages = configFunctions.reloadWelcomeMessages()
 
 
     autoRole = request.args.get("autoRole")
@@ -146,6 +144,21 @@ def memberJoinPage():
             json.dump(config, f)
         serverConfig = configFunctions.reloadServerConfig()
     currentDefaultRole = extraFunctions.getRole(server, serverConfig["defaultRole"])
+
+    newWelcomeMessage = request.args.get("newWelcomeMessage")
+    if newWelcomeMessage is not None:
+        newWelcomeMessageEntry = {
+            "creationTime" : datetime.datetime.now().strftime("%d/%m/%y %I:%M%p"),
+            "content" : newWelcomeMessage
+        }
+        messages = []
+        with open('dserverconfig/WelcomeMessages.json') as f:
+            messages = json.load(f)
+        with open('dserverconfig/WelcomeMessages.json', 'w') as f:
+            messages.append(newWelcomeMessageEntry)
+            json.dump(messages, f)
+
+    welcomeMessages = configFunctions.reloadWelcomeMessages()
 
     return render_template("memberjoin.html", client=client, allRoles = server.roles, currentDefaultRole=currentDefaultRole, data=request.values, welcomeMessages=welcomeMessages)
     
