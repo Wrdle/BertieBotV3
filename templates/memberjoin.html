@@ -3,7 +3,7 @@
     <!-- Custom styles for this page -->
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <div class="row">
-        <div class="card col-md-4 shadow mb-4">
+        <div class="card col-md-12 shadow mb-4">
             <div class="card-header py-3">
                 <h5 class="m-0 font-weight-bold text-primary">Auto Role</h5>
             </div>
@@ -11,7 +11,7 @@
                <p>Assigns new users a selected role automatically</p>
                 <form action="" method="get">
                     <span><b>Role: </b></span>
-                    <select name="autoRole">
+                    <select name="autoRole" class="form-control">
                         {% for role in allRoles %}
                             <option {% if role == currentDefaultRole %} selected="selected" {% endif %} value="{{role.id}}">{{role.name}}</option>
                         {% endfor %}
@@ -21,12 +21,47 @@
                 </form>
             </div>
         </div>
-        <div class="card col-md-8 shadow mb-4">
+    </div>
+    <div class="row">
+        <div class="card col-md-12 shadow mb-4">
             <div class="card-header py-3">
                 <h5 class="m-0 font-weight-bold text-primary">Custom Join Messages</h5>
             </div>
             <div class="card-body">
                 <p>Sets custom random join messages</p>
+                <h5><b>Add new message</b></h5>
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-10">
+                            <input type="text" class="form-control" id="joinMessage" placeholder="New join message">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <button type="submit" style="width:100%" class="btn btn-primary">Add Message</button>
+                        </div>
+                    </div>
+                </form>
+                <br>
+                <h5><b>Current Messages</b></h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Creation Time</th>
+                                <th>Message</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in welcomeMessages %}
+                            <tr>
+                                <td>{{message['creationTime']}}</td>
+                                <td>{{message['content']}}</td>
+                                <td>Remove</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
