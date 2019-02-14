@@ -48,12 +48,15 @@ async def on_member_join(member):
         await client.send_message(member.server.owner, "There was an error adding the default role to a newly joined server member. Please login to the web panel and ensure that the role you have chosen still exists")
     
     if len(welcomeMessages) > 0:
+        message = ""
         if len(welcomeMessages) == 1:
             message = welcomeMessages[0]['content']
-            await client.send_message(member.server.default_channel, message)
         else:
-            messageToShow = welcomeMessages[randint(0, len(welcomeMessages) - 1)]
-            await client.send_message(member.server.default_channel, messageToShow['content'])
+            message = welcomeMessages[randint(0, len(welcomeMessages) - 1)]['content']
+        
+        if '{*USER*}' in message:
+            message = message.replace('{*USER*}', member.mention)    
+        await client.send_message(member.server.default_channel, message)
 
 @client.event
 async def on_member_remove(member):
