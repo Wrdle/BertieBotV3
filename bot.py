@@ -11,6 +11,7 @@ from random import *
 import configFunctions
 import extraFunctions
 import auditlog
+import chatLeaderboard
 
 app = Flask(__name__)
 
@@ -88,6 +89,7 @@ async def clear(ctx, amount=100):
 
 @client.event
 async def on_message(message):
+    chatLeaderboard.newMessage(message.author)
     newMessage = {
         "id": message.id,
         "time": str(datetime.datetime.now().strftime("%d/%m/%y %I:%M%p")),
@@ -164,12 +166,24 @@ def memberJoinPage():
     welcomeMessages = configFunctions.reloadWelcomeMessages()
 
     return render_template("memberjoin.html", client=client, allRoles = server.roles, currentDefaultRole=currentDefaultRole, data=request.values, welcomeMessages=welcomeMessages)
-    
+
+@app.route("/leaderboard")
+def leaderboard():
+    leaderboard = chatLeaderboard.loadLeaderboard()
+    leaderboard.sort(key = takeSecondElement, reverse=True) 
+    return render_template("leaderboard.html", client = client, leaderboard = leaderboard)
 
 @app.context_processor
 def inject_channels():
     allChannels = client.get_all_channels()
     return dict(allChannels=allChannels) 
+
+
+# EXTRA FUNCTIONS
+def takeSecondElement(element):
+    return element["xp"]
+
+
 
 webThread = threading.Thread(target=flaskThread)
 client.run(TOKEN)
