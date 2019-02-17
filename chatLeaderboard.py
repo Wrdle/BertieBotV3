@@ -9,7 +9,6 @@ def loadLeaderboard():
 def newMessage(member):
     leaderboard = loadLeaderboard()
     memberExists = False
-    memberXP = None
     for  row in leaderboard:
         if row["memberID"] == member.id:
             memberExists = True

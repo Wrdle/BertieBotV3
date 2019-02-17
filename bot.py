@@ -86,6 +86,13 @@ async def clear(ctx, amount=100):
     await client.delete_messages(messages)
     await client.say('Messages deleted')
 
+@client.command(pass_context=True)
+async def xp(ctx):
+    leaderboard = chatLeaderboard.loadLeaderboard()
+    for row in leaderboard:
+        if row['memberID'] == ctx.message.author.id:
+            await client.say('You have ' + str(row['xp']) + 'XP ' + ctx.message.author.mention)
+
 
 @client.event
 async def on_message(message):
@@ -182,7 +189,6 @@ def inject_channels():
 # EXTRA FUNCTIONS
 def takeSecondElement(element):
     return element["xp"]
-
 
 
 webThread = threading.Thread(target=flaskThread)
