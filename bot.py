@@ -6,6 +6,7 @@ import datetime
 import json
 from flask import Flask, render_template, request
 from random import *
+from requests import get
 
 #CUSTOM
 import configFunctions
@@ -92,6 +93,22 @@ async def xp(ctx):
     for row in leaderboard:
         if row['memberID'] == ctx.message.author.id:
             await client.say('You have ' + str(row['xp']) + 'XP ' + ctx.message.author.mention)
+
+@client.command(pass_context=True)
+async def leaderboard(ctx):
+    leaderboard = chatLeaderboard.loadLeaderboard()
+    leaderboard.sort(key = takeSecondElement, reverse=True)
+    message = "The top 5 people on the leaderboard are:\n"
+    iterations = 0
+    for row in leaderboard:
+        iterations += 1
+        if iterations <= 5:
+            message += str(iterations) + ". " + row["name"] + ": " + str(row["xp"]) + "XP\n"
+    message += 'To see the full leaderboard go to: http://' + get('https://api.ipify.org').text + ":5000/leaderboard"
+    await client.say(message)
+
+        
+        
 
 
 @client.event
