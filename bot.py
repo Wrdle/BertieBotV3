@@ -103,12 +103,9 @@ async def leaderboard(ctx):
     for row in leaderboard:
         iterations += 1
         if iterations <= 5:
-            message += str(iterations) + ". " + row["name"] + ": " + str(row["xp"]) + "XP\n"
-    message += 'To see the full leaderboard go to: http://' + get('https://api.ipify.org').text + ":5000/leaderboard"
-    await client.say(message)
+            message += "    " + str(iterations) + ".   " + row["name"] + ": " + str(row["xp"]) + "XP\n"
+    await client.say(message)       
 
-        
-        
 
 
 @client.event
