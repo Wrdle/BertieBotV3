@@ -192,7 +192,7 @@ def memberJoinPage():
     return render_template("memberjoin.html", client=client, allRoles = server.roles, currentDefaultRole=currentDefaultRole, data=request.values, welcomeMessages=welcomeMessages)
 
 @app.route("/leaderboard")
-def leaderboard():
+def leaderboardPage():
     leaderboard = chatLeaderboard.loadLeaderboard()
     leaderboard.sort(key = takeSecondElement, reverse=True) 
     return render_template("leaderboard.html", client = client, leaderboard = leaderboard)
