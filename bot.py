@@ -196,12 +196,15 @@ def leaderboardPage():
     leaderboard.sort(key = lambda x : x['xp'], reverse=True) 
     return render_template("leaderboard.html", client = client, leaderboard = leaderboard)
 
+@app.route("/autorank")
+def autoRankPage():
+    return render_template("autorank.html")
+
 @app.context_processor
 def inject_channels():
     allChannels = client.get_all_channels()
     return dict(allChannels=allChannels) 
-
-
+    
 
 webThread = threading.Thread(target=flaskThread)
 client.run(TOKEN)
