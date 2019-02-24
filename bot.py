@@ -5,7 +5,7 @@ import threading
 import datetime
 import json
 from flask import Flask, render_template, request
-from random import *
+from random import randint
 from requests import get
 
 #CUSTOM
@@ -97,7 +97,7 @@ async def xp(ctx):
 @client.command(pass_context=True)
 async def leaderboard(ctx):
     leaderboard = chatLeaderboard.loadLeaderboard()
-    leaderboard.sort(key = takeSecondElement, reverse=True)
+    leaderboard.sort(key = lambda x : x['xp'], reverse=True)
     message = "The top 5 people on the leaderboard are:\n"
     iterations = 0
     for row in leaderboard:
@@ -110,7 +110,6 @@ async def leaderboard(ctx):
 
 @client.event
 async def on_message(message):
-    chatLeaderboard.newMessage(message.author)
     newMessage = {
         "id": message.id,
         "time": str(datetime.datetime.now().strftime("%d/%m/%y %I:%M%p")),
@@ -127,6 +126,9 @@ async def on_message(message):
     with open('dserverconfig/ServerChatLog.json', 'w') as f:
         json.dump(data, f)
     await client.process_commands(message)
+
+    chatLeaderboard.newMessage(message.author)
+    await chatLeaderboard.autoRanks(message.author, message.server, client)
     
 
 # ---- WEB SERVER ----#
@@ -191,7 +193,7 @@ def memberJoinPage():
 @app.route("/leaderboard")
 def leaderboardPage():
     leaderboard = chatLeaderboard.loadLeaderboard()
-    leaderboard.sort(key = takeSecondElement, reverse=True) 
+    leaderboard.sort(key = lambda x : x['xp'], reverse=True) 
     return render_template("leaderboard.html", client = client, leaderboard = leaderboard)
 
 @app.context_processor
@@ -199,10 +201,6 @@ def inject_channels():
     allChannels = client.get_all_channels()
     return dict(allChannels=allChannels) 
 
-
-# EXTRA FUNCTIONS
-def takeSecondElement(element):
-    return element["xp"]
 
 
 webThread = threading.Thread(target=flaskThread)
