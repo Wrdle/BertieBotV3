@@ -45,7 +45,7 @@ def loadAutoRanks():
     if os.path.isfile('dserverconfig/AutoRanks.json') == True:
         with open('dserverconfig/AutoRanks.json') as f:
             ranks = json.load(f)
-            ranks.sort(key= lambda x : x['xp'])
+            ranks.sort(key= lambda x : int(x['xp']))
     else:
         with open('dserverconfig/AutoRanks.json', 'w') as f:
             json.dump(ranks, f)
@@ -53,13 +53,37 @@ def loadAutoRanks():
     
 async def autoRanks(member, server, client):
     ranks = loadAutoRanks()
-    memberXP = getMemberXP(member)
+    if len(ranks) > 0:
+        memberXP = getMemberXP(member)
 
+        for rank in ranks:
+            if int(rank['xp']) < memberXP:
+                role = extraFunctions.getRole(server, rank["id"])
+                if role not in member.roles:
+                    await client.add_roles(member, role)
+
+def addNewAutoRank(newAutoRank, newAutoRankXP):
+    newEntry = {
+        "id" : newAutoRank,
+        "xp" : newAutoRankXP
+    }
+
+    ranks = []
+
+    with open('dserverconfig/AutoRanks.json') as f:
+        ranks = json.load(f)
+
+    rankExists = False
     for rank in ranks:
-        if rank['xp'] < memberXP:
-            role = extraFunctions.getRole(server, rank["id"])
-            if role not in member.roles:
-                await client.add_roles(member, role)
+        if rank['id'] == newEntry['id']:
+            rank['xp'] = newEntry['xp']
+            rankExists = True
+
+    if rankExists == False:
+        ranks.append(newEntry)
+
+    with open('dserverconfig/AutoRanks.json', 'w') as f:
+        json.dump(ranks, f)
 
 
 

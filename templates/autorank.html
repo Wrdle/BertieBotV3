@@ -1,4 +1,57 @@
 {% extends "layout.html" %}
 {% block content %}
-oof
+<link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+<div class="row">
+    <div class="card col-md-12 shadow mb-4">
+        <div class="card-header py-3">
+            <h5 class="m-0 font-weight-bold text-primary">Auto Rank Up</h5>
+        </div>
+        <div class="card-body">
+            <p>Automatically assigns roles deermined by the users XP</p>
+            <h5><b>Add new auto rank</b></h5>
+            <form action="/autorank" method="POST">
+                <div class="form-row">
+                    <div class="col-md-10">
+                        <span><b>Role: </b></span>
+                        <select name="autoRank" class="form-control">
+                            {% for role in allRoles %}
+                            <option value="{{role.id}}">{{role.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <span><b>XP: </b></span>
+                        <input type="number" class="form-control" name="rankRequiredXP" id="requiredXP">
+                    </div>
+                </div>
+                <br>
+                <button type="submit" style="width:100%" class="btn btn-primary">Add Auto Rank</button>
+            </form>
+        </div>
+        <br>
+        <h5><b>Current Auto Ranks</b></h5>
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Rank Name</th>
+                        <th>Rank ID</th>
+                        <th>XP</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rank in currentAutoRanks %}
+                    <tr>
+                        <td>{{extraFunctions.getRole(server, rank['id'])}}</td>
+                        <td>{{rank['id']}}</td>
+                        <td>{{rank['xp']}}</td>
+                        <td>Remove</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock content %}

@@ -196,9 +196,24 @@ def leaderboardPage():
     leaderboard.sort(key = lambda x : x['xp'], reverse=True) 
     return render_template("leaderboard.html", client = client, leaderboard = leaderboard)
 
-@app.route("/autorank")
+@app.route('/autorank', methods=['GET', 'POST'])
 def autoRankPage():
-    return render_template("autorank.html")
+    if request.method == 'POST':
+        newAutoRank = request.form.get('autoRank')
+        newAutoRankXP = request.form.get('rankRequiredXP')
+        if newAutoRank is not None and newAutoRankXP is not None:
+            chatLeaderboard.addNewAutoRank(newAutoRank, newAutoRankXP)
+    
+    server = client.get_server(serverid)
+    allRoles = server.roles
+    for role in allRoles:
+        if role.name == '@everyone':
+            allRoles.remove(role)
+    
+    currentAutoRanks = chatLeaderboard.loadAutoRanks()
+    currentAutoRanks.sort(key = lambda x : x['xp'], reverse=True)
+
+    return render_template("autorank.html", extraFunctions = extraFunctions, allRoles = server.roles, currentAutoRanks = currentAutoRanks, client = client, server = server)
 
 @app.context_processor
 def inject_channels():
@@ -207,4 +222,10 @@ def inject_channels():
     
 
 webThread = threading.Thread(target=flaskThread)
-client.run(TOKEN)
+try:
+    client.run(TOKEN)
+except:
+    try:
+        client.run(TOKEN)
+    except:
+        raise
