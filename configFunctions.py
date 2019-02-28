@@ -10,7 +10,7 @@ def reloadServerConfig():
         with open ('dserverconfig/ServerConfig.json', 'w+') as f:
             serverConfig = {
                 "defaultRole": None, 
-                "customWelcomeMessages": False,
+                "externalDomain": None,
                 "commandPrefix": "."
             }
             json.dump(serverConfig, f)
