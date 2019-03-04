@@ -214,6 +214,23 @@ def autoRankPage():
     currentAutoRanks.sort(key = lambda x : x['xp'], reverse=True)
 
     return render_template("autorank.html", extraFunctions = extraFunctions, allRoles = server.roles, currentAutoRanks = currentAutoRanks, client = client, server = server)
+@app.route('/settings')
+def settingsPage():
+    return render_template("settings.html")
+
+@app.route('/publicleaderboard')
+def publicLeaderboardPage():
+    server = client.get_server(serverid)
+
+    leaderboard = chatLeaderboard.loadLeaderboard()
+    leaderboard.sort(key = lambda x : x['xp'], reverse=True) 
+    
+    for user in leaderboard:
+        server = client.get_server(serverid)
+        leaderboard[leaderboard.index(user)]["roles"] = (server.get_member(user["memberID"]).roles)
+
+    return render_template("publicleaderboard.html", serverName = server.name, leaderboard = leaderboard)
+
 
 @app.context_processor
 def inject_channels():

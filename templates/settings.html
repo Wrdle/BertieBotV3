@@ -6,14 +6,20 @@
             <h5 class="m-0 font-weight-bold text-primary">Website Domain</h5>
         </div>
         <div class="card-body">
-           <p>Http address provided to users by the bot when referencing the website</p>
+            <p>Http address provided to users by the bot when referencing the website</p>
+            <span><b>Example Link: </b><span id="liveAddress"></span></span>
             <form action="" method="get">
                 <span><b></b></span>
-                <select name="autoRole" class="form-control">
-                    {% for role in allRoles %}
-                        <option {% if role == currentDefaultRole %} selected="selected" {% endif %} value="{{role.id}}">{{role.name}}</option>
-                    {% endfor %}
-                </select>
+                <input type="text" name="webAddress" id="address" onkeyup="liveDomainFunction()">
+                <script>
+                    function liveDomainFunction() {
+                        var currentAddress = document.getElementById("address").value;
+                        if (currentAddress != "") {
+                            currentAddress = currentAddress.concat("/leaderboard");
+                            document.getElementById("liveAddress").innerHTML = currentAddress;
+                        }
+                    }
+                </script>
                 <br><br>
                 <input type="submit" class="btn btn-success" name="SaveAutoRole" value="&nbsp; Save &nbsp;">
             </form>
