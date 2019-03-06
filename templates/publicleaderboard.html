@@ -14,7 +14,7 @@
         @font-face { font-family: Aurora; src: url('static/aurora.ttf'); } 
         @font-face { font-family: Aurora; font-weight: bold; src: url('static/aurora.ttf');}
         body {
-            background-color: #2F3136;
+            background-color: #282B30;
             color: white;
             font-family: 'Open Sans'
         }
@@ -28,18 +28,46 @@
             padding: 2px 2px 2px 2px;
             margin-right: 4px;
             width: fit-content;
+            margin-top: 3px;
+            margin-bottom: 3px; 
         }
         th, td {
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #484C52;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-left: 10px;
+            padding-right:10px;
+            vertical-align: middle;
         }
-
+        .leaderboard-container {
+            background-color: #36393F;
+            padding-top: 10px;
+            padding-bottom: 25px;
+            padding-right:25px;
+            padding-left:25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+        .sidecolumn-container {
+            background-color: #36393F;
+            padding: 20px 15px 3px 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            margin-bottom: 15px;
+        }
+        .divider {
+            border-bottom: 1px solid #484C52;
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
 
     </style>
     </head>
 
 <body>
     <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: #202225;">
-        <a class="navbar-brand" href="#">{{serverName}}</a>
+        <a class="navbar-brand" href="#">{{server.name}}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -61,47 +89,52 @@
     <br><br><br><br>
     <div class="container">
         <h1 style="text-align: center; font-size: 4em; font-family: Aurora">LEADERBOARD</h1>
+        <br>
         <div class="row">
-            <div class="col-md-9">
-                <table class="table" id="dataTable" width="100%" cellspacing="0">
-                    <thead style="font-weight: 800;">
-                        <tr style="font-size: 1.25em">
-                            <th>User</th>
-                            <th>Experience</th>
-                            <th>Roles</th>
-                        </tr>
-                    </thead>
-                    <tbody style="font-family: 'Open Sans'; font-weight: 600; color: #E3E3E3">
-                        {% for row in leaderboard %}
-                        <tr>
-                            <td>{{row['name']}}</td>
-                            <td>{{row['xp']}}</td>
-                            <td>{% for role in row['roles'] %}
-                                    {% if role.name != '@everyone' %}
-                                        <span class="role" style="border: 1px solid rgb({{role.color.r}}, {{role.color.g}}, {{role.color.b}});">{{role.name}}</span>
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-md-3" style=" padding-left: 10px; padding-top: 5px">
-                <div style="border-bottom: solid white 1px">
-                    <h4>Server Rules</h4>
-                    <ul>
-                        <li>Everyone is free</li>
-                        <li>Todo what they want</li>
-                        <li>Wow this sounds depressing</li>
-                    </ul>
+            <div class="col-md-8">
+                <div class="leaderboard-container">
+                    <table id="dataTable" width="100%">
+                        <thead style="font-weight: 800;">
+                            <tr style="font-size: 1.25em">
+                                <th>User</th>
+                                <th>Experience</th>
+                                <th>Roles</th>
+                            </tr>
+                        </thead>
+                        <tbody style="font-family: 'Open Sans'; font-weight: 600; color: #E3E3E3">
+                            {% for row in leaderboard %}
+                            <tr>
+                                <td>{{row['name']}}</td>
+                                <td>{{row['xp']}}</td>
+                                <td>{% for role in row['roles'] %}
+                                        {% if role.name != '@everyone' %}
+                                            <span class="role" style="border: 1px solid rgb({{role.color.r}}, {{role.color.g}}, {{role.color.b}});">{{role.name}}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-                <div>
-                    <br>
-                    <h5>Next Order of Business</h5>
-                    <ul>
-                        <li>Available Ranks will go somewhere here?</li>
-                    </ul>
+            </div>
+            <div class="col-md-4" style="padding-left: 10px;">
+                <div class="sidecolumn-container">
+                    <div>
+                        <h4><b>{{server.name}}</b></h4>
+                        <img src="{{server.icon_url}}" style="border-radius: 50%;" width="120px">
+                    </div>
+                </div>
+                <div class="sidecolumn-container">
+                    <div>
+                        <h4><b>Role Rewards</b></h4>
+                        <div class="divider"></div>
+                        {% for role in autoRanks %}
+                            <span style="font-weight: 300; font-size: 15px"> Experience: {{role['xp']}}</span><br>
+                            <span class="role" style="border: 1px solid rgb({{role['role'].color.r}}, {{role['role'].color.g}}, {{role['role'].color.b}});">{{role['role'].name}}</span>
+                            <br><br>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,7 +142,7 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    <script src="https://code.jquery.com/jquer      y-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"

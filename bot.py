@@ -35,7 +35,8 @@ async def on_ready():
     
     for cserver in client.servers:
         open("dserverconfig/serverid.txt", "w").write(cserver.id)
-    webThread.start()
+    if webThread.isAlive != True:
+        webThread.start()
 
 
 @client.event
@@ -176,7 +177,7 @@ def memberJoinPage():
     newWelcomeMessage = request.args.get("newWelcomeMessage")
     if newWelcomeMessage is not None:
         newWelcomeMessageEntry = {
-            "creationTime" : datetime.datetime.now().strftime("%d/%m/%y %I:%M%p"),
+            "creationTime" : datetime.datetime.now().strftime("%d/%m/%y %I:%    M%p"),
             "content" : newWelcomeMessage
         }
         messages = []
@@ -223,13 +224,15 @@ def publicLeaderboardPage():
     server = client.get_server(serverid)
 
     leaderboard = chatLeaderboard.loadLeaderboard()
-    leaderboard.sort(key = lambda x : x['xp'], reverse=True) 
-    
+    leaderboard.sort(key = lambda x : x['xp'], reverse=True)    
     for user in leaderboard:
-        server = client.get_server(serverid)
         leaderboard[leaderboard.index(user)]["roles"] = (server.get_member(user["memberID"]).roles)
 
-    return render_template("publicleaderboard.html", serverName = server.name, leaderboard = leaderboard)
+    autoRanks = chatLeaderboard.loadAutoRanks()    
+    for rank in autoRanks:
+        autoRanks[autoRanks.index(rank)]["role"] = extraFunctions.getRole(server, rank['id'])
+
+    return render_template("publicleaderboard.html", server = server, leaderboard = leaderboard, autoRanks = autoRanks)
 
 
 @app.context_processor
@@ -237,7 +240,8 @@ def inject_channels():
     allChannels = client.get_all_channels()
     return dict(allChannels=allChannels) 
     
-
+# Starts a seperate thread for the web server 
+# allowing the bot and the webserver to run independantly
 webThread = threading.Thread(target=flaskThread)
 try:
     client.run(TOKEN)
