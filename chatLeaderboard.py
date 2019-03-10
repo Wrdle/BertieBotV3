@@ -21,7 +21,7 @@ def getMemberXP(member):
 
 def newMessage(member, message):
     if member.bot == False:
-        if message.content[0] != '.':
+        if message.content[0].strip() != '.':
             leaderboard = loadLeaderboard()
             memberExists = False
             for  row in leaderboard:

@@ -101,15 +101,22 @@ async def leaderboard(ctx):
     leaderboard.sort(key = lambda x : x['xp'], reverse=True)
 
     serverConfig = configFunctions.reloadServerConfig()
+    
+    em = discord.Embed(title='Chat Leaderboard', colour=0x00D3DE)
 
-    message = "The top 5 people on the leaderboard are:\n"
+    em.description = "The top 5 people on the leaderboard are:\n"
+
+    appinfo = await client.application_info()
+    em.set_author(name = appinfo.name, icon_url= appinfo.icon_url)
     iterations = 0
     for row in leaderboard:
         iterations += 1
         if iterations <= 5:
-            message += "    " + str(iterations) + ".   " + row["name"] + ": " + str(row["xp"]) + "XP\n"
-    message += "Leaderboard available at: " + serverConfig['externalURL'] + ":5000/leaderboard"
-    await client.say(message)       
+            em.description += str(iterations) + ".   " + row["name"] + ": " + str(row["xp"]) + "XP\n"
+    
+    if serverConfig["externalURL"] is not None:
+        em.description += "Leaderboard available at: " + serverConfig['externalURL'] + ":5000/leaderboard"
+    await client.send_message(ctx.message.channel, embed=em)       
 
 
 

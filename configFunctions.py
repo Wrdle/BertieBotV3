@@ -21,7 +21,10 @@ def updateWebURL(url):
     with open('dserverconfig/ServerConfig.json') as f:
         serverConfig = json.load(f)
 
-    serverConfig['externalURL'] = url
+    if url.strip() != "":
+        serverConfig['externalURL'] = url
+    else:
+        serverConfig['externalURL'] = None
 
     with open('dserverconfig/ServerConfig.json', 'w') as f:
         json.dump(serverConfig, f)
