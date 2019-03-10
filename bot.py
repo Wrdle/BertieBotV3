@@ -99,12 +99,16 @@ async def xp(ctx):
 async def leaderboard(ctx):
     leaderboard = chatLeaderboard.loadLeaderboard()
     leaderboard.sort(key = lambda x : x['xp'], reverse=True)
+
+    serverConfig = configFunctions.reloadServerConfig()
+
     message = "The top 5 people on the leaderboard are:\n"
     iterations = 0
     for row in leaderboard:
         iterations += 1
         if iterations <= 5:
             message += "    " + str(iterations) + ".   " + row["name"] + ": " + str(row["xp"]) + "XP\n"
+    message += "Leaderboard available at: " + serverConfig['externalURL'] + ":5000/leaderboard"
     await client.say(message)       
 
 
@@ -128,7 +132,7 @@ async def on_message(message):
         json.dump(data, f)
     await client.process_commands(message)
 
-    chatLeaderboard.newMessage(message.author)
+    chatLeaderboard.newMessage(message.author, message)
     await chatLeaderboard.autoRanks(message.author, message.server, client)
     
 
@@ -215,9 +219,16 @@ def autoRankPage():
     currentAutoRanks.sort(key = lambda x : x['xp'], reverse=True)
 
     return render_template("autorank.html", extraFunctions = extraFunctions, allRoles = server.roles, currentAutoRanks = currentAutoRanks, client = client, server = server)
-@app.route('/settings')
+
+@app.route('/settings', methods=['GET', 'POST'])
 def settingsPage():
-    return render_template("settings.html")
+    if request.method == 'POST':
+        webURL = request.form.get('webAddress')
+        if webURL is not None:
+            configFunctions.updateWebURL(webURL)
+
+    serverConfig = configFunctions.reloadServerConfig()
+    return render_template("settings.html", serverConfig = serverConfig)
 
 @app.route('/publicleaderboard')
 def publicLeaderboardPage():

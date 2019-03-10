@@ -16,6 +16,17 @@ def reloadServerConfig():
             json.dump(serverConfig, f)
     return serverConfig
 
+def updateWebURL(url):
+    serverConfig = None
+    with open('dserverconfig/ServerConfig.json') as f:
+        serverConfig = json.load(f)
+
+    serverConfig['externalURL'] = url
+
+    with open('dserverconfig/ServerConfig.json', 'w') as f:
+        json.dump(serverConfig, f)
+
+
 def reloadWelcomeMessages():
     welcomeMessages = []
     try:

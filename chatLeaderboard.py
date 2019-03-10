@@ -19,26 +19,27 @@ def getMemberXP(member):
             return user['xp']
     return 0
 
-def newMessage(member):
+def newMessage(member, message):
     if member.bot == False:
-        leaderboard = loadLeaderboard()
-        memberExists = False
-        for  row in leaderboard:
-            if row["memberID"] == member.id:
-                memberExists = True
-                row["xp"] = row["xp"] + 1
-                if member.name != row["name"]:
-                    row["name"] = member.name
-        if memberExists == False:
-            newUser = {
-                "memberID" : member.id,
-                "name" : member.name,
-                "xp" : 1
-            }
-            leaderboard.append(newUser)
-    
-        with open('dserverconfig/ChatLeaderboard.json', 'w') as f:
-            json.dump(leaderboard, f)
+        if message.content[0] != '.':
+            leaderboard = loadLeaderboard()
+            memberExists = False
+            for  row in leaderboard:
+                if row["memberID"] == member.id:
+                    memberExists = True
+                    row["xp"] = row["xp"] + 1
+                    if member.name != row["name"]:
+                        row["name"] = member.name
+            if memberExists == False:
+                newUser = {
+                    "memberID" : member.id,
+                    "name" : member.name,
+                    "xp" : 1
+                }
+                leaderboard.append(newUser)
+        
+            with open('dserverconfig/ChatLeaderboard.json', 'w') as f:
+                json.dump(leaderboard, f)
 
 def loadAutoRanks():
     ranks = []

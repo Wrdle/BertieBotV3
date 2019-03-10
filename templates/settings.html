@@ -8,20 +8,20 @@
         <div class="card-body">
             <p>Http address provided to users by the bot when referencing the website</p>
             <span><b>Example Link: </b><span id="liveAddress"></span></span>
-            <form action="" method="get">
+            <form action="" method="post">
                 <span><b></b></span>
-                <input type="text" name="webAddress" id="address" onkeyup="liveDomainFunction()">
+                <input type="text" name="webAddress" id="address" value="{{serverConfig['externalURL']}}" onkeyup="liveDomainFunction()">
                 <script>
                     function liveDomainFunction() {
                         var currentAddress = document.getElementById("address").value;
                         if (currentAddress != "") {
-                            currentAddress = currentAddress.concat("/leaderboard");
+                            currentAddress = currentAddress.concat(":5000s/leaderboard");
                             document.getElementById("liveAddress").innerHTML = currentAddress;
                         }
                     }
                 </script>
                 <br><br>
-                <input type="submit" class="btn btn-success" name="SaveAutoRole" value="&nbsp; Save &nbsp;">
+                <input type="submit" class="btn btn-success">
             </form>
         </div>
     </div>
