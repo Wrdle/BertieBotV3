@@ -168,13 +168,13 @@ def channelPage():
             channelLog.append(message)
     return render_template("channel.html", client=client, channelLog=channelLog, currentChannel=currentChannel)
 
-@app.route("/memberjoin", methods=['GET'])
+@app.route("/memberjoin", methods=['GET', 'POST'])
 def memberJoinPage():
     server = client.get_server(serverid)
     serverConfig = configFunctions.reloadServerConfig()
 
 
-    autoRole = request.args.get("autoRole")
+    autoRole = request.form.get("autoRole")
     if autoRole is not None:
         with open('dserverconfig/ServerConfig.json') as f:
             config = json.load(f)
@@ -185,17 +185,34 @@ def memberJoinPage():
         serverConfig = configFunctions.reloadServerConfig()
     currentDefaultRole = extraFunctions.getRole(server, serverConfig["defaultRole"])
 
-    newWelcomeMessage = request.args.get("newWelcomeMessage")
+    newWelcomeMessage = request.form.get("newWelcomeMessage")
     if newWelcomeMessage is not None:
-        newWelcomeMessageEntry = {
-            "creationTime" : datetime.datetime.now().strftime("%d/%m/%y %I:%    M%p"),
-            "content" : newWelcomeMessage
-        }
         messages = []
+
         with open('dserverconfig/WelcomeMessages.json') as f:
             messages = json.load(f)
+
+        newWelcomeMessageEntry = {
+            "id" : messages[-1]['id'] + 1,
+            "creationTime" : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            "content" : newWelcomeMessage
+        }
+
         with open('dserverconfig/WelcomeMessages.json', 'w') as f:
             messages.append(newWelcomeMessageEntry)
+            json.dump(messages, f)
+
+    removeMessage = request.form.get('removeMessage')
+    if removeMessage is not None:
+        messages = []   
+        with open('dserverconfig/WelcomeMessages.json') as f:
+            messages = json.load(f)
+
+        for message in messages:
+            if message['id'] == int(removeMessage):
+                messages.remove(message)
+        
+        with open('dserverconfig/WelcomeMessages.json', 'w') as f:
             json.dump(messages, f)
 
     welcomeMessages = configFunctions.reloadWelcomeMessages()

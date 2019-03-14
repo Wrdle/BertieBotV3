@@ -9,7 +9,7 @@
             </div>
             <div class="card-body">
                <p>Assigns new users a selected role automatically</p>
-                <form action="" method="get">
+                <form action="" method="post">
                     <span><b>Role: </b></span>
                     <select name="autoRole" class="form-control">
                         {% for role in allRoles %}
@@ -30,7 +30,7 @@
             <div class="card-body">
                 <p>Sets custom random join messages. Use '{*USER*}' to mention new member in join message.</p>
                 <h5><b>Add new message</b></h5>
-                <form action="" method="get">
+                <form action="" method="post">
                     <div class="form-row">
                         <div class="form-group col-md-10">
                             <input type="text" class="form-control" name="newWelcomeMessage" id="joinMessage" placeholder="New join message">
@@ -56,7 +56,7 @@
                             <tr>
                                 <td>{{message['creationTime']}}</td>
                                 <td>{{message['content']}}</td>
-                                <td>Remove</td>
+                                <td><form method="post"><button name="removeMessage" value="{{message['id']}}">Remove</button></form></td>
                             </tr>
                             {% endfor %}
                         </tbody>
