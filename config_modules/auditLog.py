@@ -1,19 +1,20 @@
 import json
+import os
 
 def getAuditLog():
     auditLog = None
     try:
-        with open('dserverconfig/auditLog.json') as f:
+        with open(os.path.abspath(os.curdir) + '/dserverconfig/auditLog.json') as f:
             auditLog = json.load(f)
     except:
         print('Error opening Audit Log. File may not exist.')
-        with open ('dserverconfig/auditLog.json', 'w+') as f:
+        with open (os.path.abspath(os.curdir) + '/dserverconfig/auditLog.json', 'w+') as f:
             auditLog = []
             json.dump(auditLog, f)
     return auditLog
 
 def saveAuditLog(auditLog):
-    with open ('dserverconfig/auditLog.json', 'w') as f:
+    with open (os.path.abspath(os.curdir) + '/dserverconfig/auditLog.json', 'w') as f:
         json.dump(auditLog, f)
 
 def newMemberJoin(user, time):
