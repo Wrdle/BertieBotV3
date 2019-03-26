@@ -86,5 +86,15 @@ def addNewAutoRank(newAutoRank, newAutoRankXP):
     with open('dserverconfig/AutoRanks.json', 'w') as f:
         json.dump(ranks, f)
 
+def removeAutoRank(id):
+    autoRanks = loadAutoRanks()
+    
+    for rank in autoRanks:
+        if rank['id'] == id:
+            autoRanks.remove(rank)
+
+    with open('dserverconfig/AutoRanks.json', 'w') as f:
+        json.dump(autoRanks, f)
+
 
 

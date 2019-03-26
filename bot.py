@@ -187,7 +187,11 @@ def autoRankPage():
     for role in allRoles:
         if role.name == '@everyone':
             allRoles.remove(role)
-    
+
+    removeRankID = request.form.get('removeRankID')
+    if removeRankID is not None:
+        chatLeaderboardConfig.removeAutoRank(removeRankID)
+        
     currentAutoRanks = chatLeaderboardConfig.loadAutoRanks()
     currentAutoRanks.sort(key = lambda x : x['xp'], reverse=True)
 

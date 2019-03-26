@@ -46,7 +46,7 @@
                         <td>{{extraFunctions.getRole(server, rank['id'])}}</td>
                         <td>{{rank['id']}}</td>
                         <td>{{rank['xp']}}</td>
-                        <td>Remove</td>
+                        <td><form method="post"><button name="removeRankID" value="{{rank['id']}}">Remove</button></form></td>
                     </tr>
                     {% endfor %}
                 </tbody>
