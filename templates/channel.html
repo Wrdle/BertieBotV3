@@ -24,11 +24,11 @@
                   <tbody>
                     {% for message in channelLog %}
                       <tr>
-                          <td>{{message['time']}}</td>
-                          <td>{{message['user']}}</td>
-                          <td>{{message['content']}}</td>
-                          <td>{{message['tts']}}</td>
-                          <td>{{message['attachments']}}</td>
+                          <td>{{message.time}}</td>
+                          <td>{{message.userID}}</td>
+                          <td>{{message.content}}</td>
+                          <td>{{message.tts}}</td>
+                          <td>{{message.attachments}}</td>
                       </tr>
                     {% endfor %}
                   </tbody>

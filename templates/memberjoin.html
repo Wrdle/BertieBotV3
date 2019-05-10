@@ -54,9 +54,9 @@
                         <tbody>
                             {% for message in welcomeMessages %}
                             <tr>
-                                <td>{{message['creationTime']}}</td>
-                                <td>{{message['content']}}</td>
-                                <td><form method="post"><button name="removeMessage" value="{{message['id']}}">Remove</button></form></td>
+                                <td>{{message.creationTime}}</td>
+                                <td>{{message.content}}</td>
+                                <td><form method="post"><button name="removeMessage" value="{{message.wMessageID}}">Remove</button></form></td>
                             </tr>
                             {% endfor %}
                         </tbody>

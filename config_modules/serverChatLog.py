@@ -1,30 +1,40 @@
 import json
+import sqlite3
 import datetime
-import os 
+import os
+
+import config_modules.botDB as botDB
 
 def newMessage(message):
-    newMessageDictionary = {
-        "id": message.id,
-        "time": str(datetime.datetime.now().strftime("%d/%m/%y %I:%M%p")),
-        "channel": message.channel.id,
-        "user": message.author.id,
-        "content": message.content,
-        "tts": str(message.tts),
-        "attachments": str(message.attachments)
-    }
-    with open(os.path.abspath(os.curdir) + '/dserverconfig/ServerChatLog.json') as f:
-        data = json.load(f)
-    data.append(newMessageDictionary)
-
-    with open(os.path.abspath(os.curdir) + '/dserverconfig/ServerChatLog.json', 'w') as f:
-        json.dump(data, f)
+    message = 'INSERT INTO ChatLog VALUES ({}, {}, {}, "{}", {}, "{}", "{}");'.format(message.id, message.channel.id, message.author.id, message.content, int(message.tts), "Experimental", str(datetime.datetime.now().strftime("%d/%m/%y %I:%M%p")))
+    with botDB.Database() as db:
+        db.execute(message)
 
 def getChannelLog(channel):
-    with open(os.path.abspath(os.curdir) + '/dserverconfig/ServerChatLog.json') as f:
-        data = json.load(f)
-
+    query = 'SELECT * FROM ChatLog WHERE channelID = {}'.format(channel.id)
     channelLog = []
-    for message in reversed(data):
-        if message["channel"] == channel.id:
-            channelLog.append(message)
+    with botDB.Database() as db:
+        data = db.execute(query)
+        for row in data:
+            channelLog.append(cLogMessage(row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
     return channelLog
+
+def getAllMessages():
+    query = 'SELECT * FROM ChatLog'
+    channelLog = []
+    with botDB.Database() as db:
+        data = db.execute(query)
+        for row in data:
+            channelLog.append(cLogMessage(row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
+    return channelLog
+
+
+class cLogMessage():
+    def __init__(self, messageID, channelID, userID, content, tts, attachments, time):
+        self.messageID = messageID
+        self.channelID = channelID
+        self.userID = userID
+        self.content = content
+        self.tts = tts
+        self.attachments = attachments
+        self.time = time

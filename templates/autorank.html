@@ -43,10 +43,10 @@
                 <tbody>
                     {% for rank in currentAutoRanks %}
                     <tr>
-                        <td>{{extraFunctions.getRole(server, rank['id'])}}</td>
-                        <td>{{rank['id']}}</td>
-                        <td>{{rank['xp']}}</td>
-                        <td><form method="post"><button name="removeRankID" value="{{rank['id']}}">Remove</button></form></td>
+                        <td>{{rank.name}}</td>
+                        <td>{{rank.rankID}}</td>
+                        <td>{{rank.xp}}</td>
+                        <td><form method="post"><button name="removeRankID" value="{{rank.rankID}}">Remove</button></form></td>
                     </tr>
                     {% endfor %}
                 </tbody>

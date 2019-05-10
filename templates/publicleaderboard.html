@@ -67,7 +67,7 @@
 
 <body>
     <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: #202225;">
-        <a class="navbar-brand" href="#">{{server.name}}</a>
+        <a class="navbar-brand" href="#">{{guild.name}}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -104,9 +104,9 @@
                         <tbody style="font-family: 'Open Sans'; font-weight: 600; color: #E3E3E3">
                             {% for row in leaderboard %}
                             <tr>
-                                <td>{{row['name']}}</td>
-                                <td>{{row['xp']}}</td>
-                                <td>{% for role in row['roles'] %}
+                                <td>{{row.name}}</td>
+                                <td>{{row.xp}}</td>
+                                <td>{% for role in row.roles %}
                                         {% if role.name != '@everyone' %}
                                             <span class="role" style="border: 1px solid rgb({{role.color.r}}, {{role.color.g}}, {{role.color.b}});">{{role.name}}</span>
                                         {% endif %}
@@ -121,8 +121,8 @@
             <div class="col-md-4" style="padding-left: 10px;">
                 <div class="sidecolumn-container">
                     <div>
-                        <h4><b>{{server.name}}</b></h4>
-                        <img src="{{server.icon_url}}" style="border-radius: 50%;" width="120px">
+                        <h4><b>{{guild.name}}</b></h4>
+                        <img src="{{guild.icon_url}}" style="border-radius: 50%;" width="120px">
                     </div>
                 </div>
                 <div class="sidecolumn-container">
@@ -130,8 +130,8 @@
                         <h4><b>Role Rewards</b></h4>
                         <div class="divider"></div>
                         {% for role in autoRanks %}
-                            <span style="font-weight: 300; font-size: 15px"> Experience: {{role['xp']}}</span><br>
-                            <span class="role" style="border: 1px solid rgb({{role['role'].color.r}}, {{role['role'].color.g}}, {{role['role'].color.b}});">{{role['role'].name}}</span>
+                            <span style="font-weight: 300; font-size: 15px"> Experience: {{role.xp}}</span><br>
+                            <span class="role" style="border: 1px solid rgb({{role.role.color.r}}, {{role.role.color.g}}, {{role.role.color.b}});">{{role.role.name}}</span>
                             <br><br>
                         {% endfor %}
                     </div>

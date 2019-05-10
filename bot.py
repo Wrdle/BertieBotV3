@@ -1,4 +1,6 @@
 import discord
+import os
+import sqlite3
 from discord.ext import commands
 import time
 import threading
@@ -10,7 +12,6 @@ from requests import get
 
 #CUSTOM
 import configFunctions
-import extraFunctions
 import config_modules.auditLog as auditLogConfig
 import config_modules.serverChatLog as serverChatLogConfig
 import config_modules.chatLeaderboard as chatLeaderboardConfig
@@ -19,23 +20,36 @@ import config_modules.welcomeMessages as welcomeMessagesConfig
 app = Flask(__name__)
 
 def flaskThread():
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=int("8080"))
 
 #TOKEN = open("C://Users//mattd//OneDrive//Coding//Bertie Bot V3//BertieBotV3//token.txt", "r").read()
 TOKEN = 'MjcxNzY2NTc5NTc2ODMyMDAw.Dy16UA.kUYz2bKmwGsW9vnJvyKNT1taCfs'
 
-serverConfig = configFunctions.reloadServerConfig()
-client = commands.Bot(command_prefix = serverConfig['commandPrefix'])
-serverid = open("dserverconfig/serverid.txt", "r").read()
+client = commands.Bot(command_prefix = configFunctions.getCommandPrefix())
+serverid = int(open("dserverconfig/serverid.txt", "r").read())
 
 @client.event
 async def on_ready():
     print('Bot is ready')
-    if len(client.servers) > 1:
+    if len(client.guilds) > 1:
         print("\033[1;37;41m Bot is connected to more than one server \033[0;37;40m")
     
-    for cserver in client.servers:
-        open("dserverconfig/serverid.txt", "w").write(cserver.id)
+    for cserver in client.guilds:
+        open("dserverconfig/serverid.txt", "w").write(str(cserver.id))
+
+    sql = None
+
+    if os.path.isfile('./botdatabase.db') != True:
+        conn = sqlite3.connect('botdatabase.db')
+        sql = conn.cursor()
+
+        sql.execute('CREATE TABLE ChatLog (messageID integer NOT NULL UNIQUE PRIMARY KEY, channelID integer NOT NULL, userID integer NOT NULL, content text, tts blob, attachments blob, time text NOT NULL);')
+        sql.execute("CREATE TABLE ChatLeaderboard (userID integer NOT NULL UNIQUE PRIMARY KEY, xp integer NOT NULL);")
+        sql.execute("CREATE TABLE WelcomeMessages (wMessageID integer NOT NULL UNIQUE PRIMARY KEY, creationTime text NOT NULL, content text NOT NULL);")
+        sql.execute("CREATE TABLE AutoRanks (roleID integer NOT NULL UNIQUE PRIMARY KEY, xp integer NOT NULL);")
+
+        conn.commit()
+        sql.close()
     if webThread.isAlive != True:
         webThread.start()
 
@@ -44,7 +58,7 @@ async def on_message(message):
     serverChatLogConfig.newMessage(message)
     await client.process_commands(message)
     chatLeaderboardConfig.newMessage(message.author, message)
-    await chatLeaderboardConfig.autoRanks(message.author, message.server, client)
+    await chatLeaderboardConfig.autoRank(message.author, message.guild)
 
 @client.event
 async def on_member_join(member):
@@ -52,12 +66,17 @@ async def on_member_join(member):
     serverConfig = configFunctions.reloadServerConfig()
 
     try:
-        if (serverConfig['defaultRole'] != None ):
-            await client.add_roles(member, extraFunctions.getRole(member.server, serverConfig['defaultRole']))
+        if serverConfig['defaultRole'] != None:
+            await member.add_roles(member.guild.get_role(configFunctions.getAutoRole()))
     except:
-        await client.send_message(member.server.owner, "There was an error adding the default role to a newly joined server member. Please login to the web panel and ensure that the role you have chosen still exists")
-        
-        await client.send_message(member.server.default_channel, welcomeMessagesConfig.getRandomMessage(member))
+        if member.dm_channel == None:
+            await member.create_dm()
+        await member.dm_channel.send("There was an error adding the default role to a newly joined server member. Please login to the web panel and ensure that the role you have chosen still exists")
+
+    # NEED TO ADD A WAY FOR THE USER TO SELECT A CHANNEL IN WEBSITE GUI TO SEND MESSAGES TO   
+    if serverConfig["greetingChannel"] != None:
+        greetingChannel = client.get_channel(serverConfig["greetingChannel"])
+        greetingChannel.send(welcomeMessagesConfig.getRandomMessage(member))
 
 @client.event
 async def on_member_remove(member):
@@ -65,38 +84,34 @@ async def on_member_remove(member):
 
 @client.command(pass_context=True)
 async def echo(ctx):
-    await client.say('ServerID: ' + ctx.message.server.id)
-    await client.say('ChannelID: ' + ctx.message.channel.id)
-    channel = client.get_channel(ctx.message.channel.id)
-    await client.send_message(channel, 'oof')
+    await ctx.channel.send('ServerID: ' + str(ctx.guild.id))
+    await ctx.channel.send('ChannelID: ' + str(ctx.channel.id))
 
 @client.command(pass_context=True)
 async def allroles(ctx):
     message = "Roles: \n"
-    for role in ctx.message.server.roles:
-        message += role.name + " : " + role.id + "\n"
-    await client.say(message)
+    for role in ctx.guild.roles:
+        message += role.name + " : " + str(role.id) + "\n"
+    await ctx.channel.send(message)
 
 @client.command(pass_context=True)
 async def clear(ctx, amount=100):
     channel = ctx.message.channel
     messages = []
-    async for message in client.logs_from(channel, limit=int(amount) + 1):
+    async for message in channel.history(limit=int(amount) + 1):
         messages.append(message)
-    await client.delete_messages(messages)
-    await client.say('Messages deleted')
+    await channel.delete_messages(messages)
+    await channel.send('Messages deleted')
 
 @client.command(pass_context=True)
 async def xp(ctx):
-    leaderboard = chatLeaderboardConfig.loadLeaderboard()
-    for row in leaderboard:
-        if row['memberID'] == ctx.message.author.id:
-            await client.say('You have ' + str(row['xp']) + 'XP ' + ctx.message.author.mention)
+    xp = chatLeaderboardConfig.getMemberXP(ctx.message.author)
+    await ctx.channel.send('You have ' + str(xp) + 'XP ' + ctx.message.author.mention)
 
 @client.command(pass_context=True)
 async def leaderboard(ctx):
     leaderboard = chatLeaderboardConfig.loadLeaderboard()
-    leaderboard.sort(key = lambda x : x['xp'], reverse=True)
+    leaderboard.sort(key = lambda x : x.xp, reverse=True)
 
     serverConfig = configFunctions.reloadServerConfig()
     
@@ -110,48 +125,42 @@ async def leaderboard(ctx):
     for row in leaderboard:
         iterations += 1
         if iterations <= 5:
-            em.description += str(iterations) + ".   " + row["name"] + ": " + str(row["xp"]) + "XP\n"
+            user = await client.fetch_user(row.userID)
+            em.description += str(iterations) + ".   " + user.name + ": " + str(row.xp) + "XP\n"
     
     if serverConfig["externalURL"] is not None:
         em.description += "Leaderboard available at: " + serverConfig['externalURL'] + ":5000/leaderboard"
-    await client.send_message(ctx.message.channel, embed=em)       
-    
+    await ctx.channel.send(embed=em)       
+
+@client.command(pass_context=True)
+async def getRandomWelcomeMessage(ctx):
+    await ctx.channel.send(welcomeMessagesConfig.getRandomMessage(ctx.message.author))
 
 # ---- WEB SERVER ----#
 @app.route("/")
 def homePage():
-    allChannelz = client.get_all_channels()
-
     totalMessagesPastMonth = 0
-    with open('dserverconfig/ServerChatLog.json') as f:
-        messages = json.load(f)
-        for message in messages:
-            if datetime.datetime.now() - datetime.datetime.strptime(message['time'], "%d/%m/%y %I:%M%p") < datetime.timedelta(days=30):
-                totalMessagesPastMonth += 1
-    return render_template("home.html", client=client, allChannelz=allChannelz, totalMessagesPastMonth=totalMessagesPastMonth)
+    messages = serverChatLogConfig.getAllMessages()
+    for message in messages:
+        if datetime.datetime.now() - datetime.datetime.strptime(message.time, "%d/%m/%y %I:%M%p") < datetime.timedelta(days=30):
+            totalMessagesPastMonth += 1
+    return render_template("home.html", client=client, totalMessagesPastMonth=totalMessagesPastMonth)
 
 @app.route("/channel", methods=['GET'])
 def channelPage():
-    channel = client.get_channel(request.values.get('channelid'))
+    channel = client.get_channel(int(request.values.get('channelid')))
     channelLog = serverChatLogConfig.getChannelLog(channel)
     return render_template("channel.html", client=client, channelLog=channelLog, currentChannel=channel)
 
 @app.route("/memberjoin", methods=['GET', 'POST'])
 def memberJoinPage():
-    server = client.get_server(serverid)
-    serverConfig = configFunctions.reloadServerConfig()
-
+    guild = client.get_guild(serverid)
 
     autoRole = request.form.get("autoRole")
     if autoRole is not None:
-        with open('dserverconfig/ServerConfig.json') as f:
-            config = json.load(f)
-        config["defaultRole"] = autoRole
-
-        with open('dserverconfig/ServerConfig.json', 'w') as f:
-            json.dump(config, f)
-        serverConfig = configFunctions.reloadServerConfig()
-    currentDefaultRole = extraFunctions.getRole(server, serverConfig["defaultRole"])
+        configFunctions.setAutoRole(int(autoRole))
+    
+    currentDefaultRole = guild.get_role(configFunctions.getAutoRole())
 
     #Checks if message sent from website is empty. If its not, add it to WelcomeMessages.json
     message = request.form.get("newWelcomeMessage")
@@ -165,8 +174,7 @@ def memberJoinPage():
         welcomeMessagesConfig.removeMessage(removeMessageID)
 
     allWelcomeMessages = welcomeMessagesConfig.getAllWelcomeMessages()
-
-    return render_template("memberjoin.html", client=client, allRoles = server.roles, currentDefaultRole=currentDefaultRole, data=request.values, welcomeMessages=allWelcomeMessages)
+    return render_template("memberjoin.html", client=client, allRoles = guild.roles, currentDefaultRole=currentDefaultRole, data=request.values, welcomeMessages=allWelcomeMessages)
 
 @app.route("/leaderboard")
 def leaderboardPage():
@@ -177,25 +185,29 @@ def leaderboardPage():
 @app.route('/autorank', methods=['GET', 'POST'])
 def autoRankPage():
     if request.method == 'POST':
+        removeRankID = request.form.get('removeRankID')
+        if removeRankID is not None:
+            chatLeaderboardConfig.removeAutoRank(removeRankID)
+
         newAutoRank = request.form.get('autoRank')
         newAutoRankXP = request.form.get('rankRequiredXP')
         if newAutoRank is not None and newAutoRankXP is not None:
             chatLeaderboardConfig.addNewAutoRank(newAutoRank, newAutoRankXP)
-    
-    server = client.get_server(serverid)
-    allRoles = server.roles
+
+    currentAutoRanks = chatLeaderboardConfig.loadAutoRanks()
+    currentAutoRanks.sort(key = lambda x : x.xp, reverse=True)
+
+    guild = client.get_guild(serverid)
+    allRoles = guild.roles
     for role in allRoles:
         if role.name == '@everyone':
             allRoles.remove(role)
+        for autoRank in currentAutoRanks:
+            if role.id == autoRank.rankID:
+                allRoles.remove(role)
+                autoRank.name = role.name
 
-    removeRankID = request.form.get('removeRankID')
-    if removeRankID is not None:
-        chatLeaderboardConfig.removeAutoRank(removeRankID)
-        
-    currentAutoRanks = chatLeaderboardConfig.loadAutoRanks()
-    currentAutoRanks.sort(key = lambda x : x['xp'], reverse=True)
-
-    return render_template("autorank.html", extraFunctions = extraFunctions, allRoles = server.roles, currentAutoRanks = currentAutoRanks, client = client, server = server)
+    return render_template("autorank.html", allRoles = allRoles, currentAutoRanks = currentAutoRanks, client = client)
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settingsPage():
@@ -209,19 +221,20 @@ def settingsPage():
 
 @app.route('/publicleaderboard')
 def publicLeaderboardPage():
-    server = client.get_server(serverid)
+    guild = client.get_guild(serverid)
 
     leaderboard = chatLeaderboardConfig.loadLeaderboard()
-    leaderboard.sort(key = lambda x : x['xp'], reverse=True)    
-    for user in leaderboard:
-        leaderboard[leaderboard.index(user)]["roles"] = (server.get_member(user["memberID"]).roles)
+    leaderboard.sort(key = lambda x : x.xp, reverse=True) # Sort leaderboard by XP
+    for user in leaderboard: # Attach roles to each leaderboard member
+        member = guild.get_member(user.userID)
+        leaderboard[leaderboard.index(user)].roles = member.roles
+        user.name = member.name
 
     autoRanks = chatLeaderboardConfig.loadAutoRanks()    
     for rank in autoRanks:
-        autoRanks[autoRanks.index(rank)]["role"] = extraFunctions.getRole(server, rank['id'])
+        autoRanks[autoRanks.index(rank)].role = guild.get_role(rank.rankID)
 
-    return render_template("publicleaderboard.html", server = server, leaderboard = leaderboard, autoRanks = autoRanks)
-
+    return render_template("publicleaderboard.html", guild = guild, leaderboard = leaderboard, autoRanks = autoRanks, client = client)
 
 @app.context_processor
 def inject_channels():

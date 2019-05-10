@@ -11,10 +11,16 @@ def reloadServerConfig():
             serverConfig = {
                 "defaultRole": None, 
                 "externalDomain": None,
-                "commandPrefix": "."
+                "commandPrefix": ".",
+                "token": None,
+                "greetingChannel": None
             }
             json.dump(serverConfig, f)
     return serverConfig
+
+def saveServerConfig(config):
+    with open('dserverconfig/ServerConfig.json', 'w+') as f:
+        json.dump(config, f)
 
 def updateWebURL(url):
     serverConfig = None
@@ -28,3 +34,17 @@ def updateWebURL(url):
 
     with open('dserverconfig/ServerConfig.json', 'w') as f:
         json.dump(serverConfig, f)
+        
+def getAutoRole():
+    return reloadServerConfig()["defaultRole"]
+
+def setAutoRole(roleID):
+    serverConfig = reloadServerConfig()
+    serverConfig["defaultRole"] = roleID
+    saveServerConfig(serverConfig)
+
+def getCommandPrefix():
+    return reloadServerConfig()["commandPrefix"]
+
+def getBotToken():
+    return reloadServerConfig()["token"]
