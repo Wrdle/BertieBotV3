@@ -50,15 +50,16 @@ def loadAutoRanks():
     return ranks
     
 async def autoRank(member, guild):
-    ranks = loadAutoRanks()
-    if len(ranks) > 0:
-        memberXP = getMemberXP(member)
+    if member.bot == False:
+        ranks = loadAutoRanks()
+        if len(ranks) > 0:
+            memberXP = getMemberXP(member)
 
-        for rank in ranks:
-            if int(rank.xp) < memberXP:
-                role = guild.get_role(rank.rankID)
-                if role not in member.roles:
-                    await member.add_roles(role)
+            for rank in ranks:
+                if int(rank.xp) < memberXP:
+                    role = guild.get_role(rank.rankID)
+                    if role not in member.roles:
+                        await member.add_roles(role)
 
 def addNewAutoRank(newAutoRank, newAutoRankXP):
     query = 'INSERT INTO AutoRanks VALUES({},{})'.format(newAutoRank, newAutoRankXP)
