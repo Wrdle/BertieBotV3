@@ -73,7 +73,7 @@ async def on_member_join(member):
     # NEED TO ADD A WAY FOR THE USER TO SELECT A CHANNEL IN WEBSITE GUI TO SEND MESSAGES TO   
     if serverConfig["greetingChannel"] != None:
         greetingChannel = client.get_channel(serverConfig["greetingChannel"])
-        greetingChannel.send(welcomeMessagesConfig.getRandomMessage(member))
+        await greetingChannel.send(welcomeMessagesConfig.getRandomMessage(member))
 
 @client.event
 async def on_member_remove(member):
