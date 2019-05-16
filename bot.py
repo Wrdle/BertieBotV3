@@ -22,9 +22,6 @@ app = Flask(__name__)
 def flaskThread():
     app.run(host='0.0.0.0', port=int("8080"))
 
-#TOKEN = open("C://Users//mattd//OneDrive//Coding//Bertie Bot V3//BertieBotV3//token.txt", "r").read()
-TOKEN = 'MjcxNzY2NTc5NTc2ODMyMDAw.Dy16UA.kUYz2bKmwGsW9vnJvyKNT1taCfs'
-
 client = commands.Bot(command_prefix = configFunctions.getCommandPrefix())
 serverid = int(open("dserverconfig/serverid.txt", "r").read())
 
@@ -116,7 +113,6 @@ async def leaderboard(ctx):
     serverConfig = configFunctions.reloadServerConfig()
     
     em = discord.Embed(title='Chat Leaderboard', colour=0x00D3DE)
-
     em.description = "The top 5 people on the leaderboard are:\n"
 
     appinfo = await client.application_info()
@@ -245,9 +241,9 @@ def inject_channels():
 # allowing the bot and the webserver to run independantly
 webThread = threading.Thread(target=flaskThread)
 try:
-    client.run(TOKEN)
+    client.run(configFunctions.getBotToken())
 except:
     try:
-        client.run(TOKEN)
+        client.run(configFunctions.getBotToken())
     except:
         raise
