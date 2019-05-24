@@ -5,13 +5,11 @@ from discord.ext import commands
 import time
 import threading
 import datetime
-import json
 from flask import Flask, render_template, request
-from random import randint
-from requests import get
 
-#CUSTOM
+# CUSTOM
 import configFunctions
+import config_modules.botDB as botDB
 import config_modules.auditLog as auditLogConfig
 import config_modules.serverChatLog as serverChatLogConfig
 import config_modules.chatLeaderboard as chatLeaderboardConfig
@@ -23,30 +21,26 @@ def flaskThread():
     app.run(host='0.0.0.0', port=int("8080"))
 
 client = commands.Bot(command_prefix = configFunctions.getCommandPrefix())
-serverid = int(open("dserverconfig/serverid.txt", "r").read())
+serverid = None
 
 @client.event
 async def on_ready():
+    global serverid
+
     print('Bot is ready')
     if len(client.guilds) > 1:
         print("\033[1;37;41m Bot is connected to more than one server \033[0;37;40m")
     
     for cserver in client.guilds:
-        open("dserverconfig/serverid.txt", "w").write(str(cserver.id))
-
-    sql = None
+        serverid = cserver.id
 
     if os.path.isfile('./botdatabase.db') != True:
-        conn = sqlite3.connect('botdatabase.db')
-        sql = conn.cursor()
+        with botDB.Database() as db:
+            db.execute('CREATE TABLE ChatLog (messageID integer NOT NULL UNIQUE PRIMARY KEY, channelID integer NOT NULL, userID integer NOT NULL, content text, tts blob, attachments blob, time text NOT NULL);')
+            db.execute("CREATE TABLE ChatLeaderboard (userID integer NOT NULL UNIQUE PRIMARY KEY, xp integer NOT NULL);")
+            db.execute("CREATE TABLE WelcomeMessages (wMessageID integer NOT NULL UNIQUE PRIMARY KEY, creationTime text NOT NULL, content text NOT NULL);")
+            db.execute("CREATE TABLE AutoRanks (roleID integer NOT NULL UNIQUE PRIMARY KEY, xp integer NOT NULL);")
 
-        sql.execute('CREATE TABLE ChatLog (messageID integer NOT NULL UNIQUE PRIMARY KEY, channelID integer NOT NULL, userID integer NOT NULL, content text, tts blob, attachments blob, time text NOT NULL);')
-        sql.execute("CREATE TABLE ChatLeaderboard (userID integer NOT NULL UNIQUE PRIMARY KEY, xp integer NOT NULL);")
-        sql.execute("CREATE TABLE WelcomeMessages (wMessageID integer NOT NULL UNIQUE PRIMARY KEY, creationTime text NOT NULL, content text NOT NULL);")
-        sql.execute("CREATE TABLE AutoRanks (roleID integer NOT NULL UNIQUE PRIMARY KEY, xp integer NOT NULL);")
-
-        conn.commit()
-        sql.close()
     if webThread.isAlive != True:
         webThread.start()
 
