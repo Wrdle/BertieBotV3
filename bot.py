@@ -15,13 +15,13 @@ import config_modules.serverChatLog as serverChatLogConfig
 import config_modules.chatLeaderboard as chatLeaderboardConfig
 import config_modules.welcomeMessages as welcomeMessagesConfig
 
-app = Flask(__name__)
-
-def flaskThread():
-    app.run(host='0.0.0.0', port=int("8080"))
-
+# ===== GLOBAL VARIABLES ===================================================== #
 client = commands.Bot(command_prefix = configFunctions.getCommandPrefix())
 serverid = None
+app = Flask(__name__)
+
+
+# ===== BOT EVENT HANDLERS =================================================== #
 
 @client.event
 async def on_ready():
@@ -72,6 +72,10 @@ async def on_member_join(member):
 @client.event
 async def on_member_remove(member):
     auditLogConfig.memberLeave(member, datetime.datetime.now())
+
+
+
+# ===== BOT CHAT COMMANDS ==================================================== #
 
 @client.command(pass_context=True)
 async def echo(ctx):
@@ -126,7 +130,12 @@ async def leaderboard(ctx):
 async def getRandomWelcomeMessage(ctx):
     await ctx.channel.send(welcomeMessagesConfig.getRandomMessage(ctx.message.author))
 
-# ---- WEB SERVER ----#
+
+
+# ===== WEB SERVER =========================================================== #
+def flaskThread():
+    app.run(host='0.0.0.0', port=int("8080"))
+
 @app.route("/")
 def homePage():
     totalMessagesPastMonth = 0
@@ -226,13 +235,8 @@ def publicLeaderboardPage():
 
     return render_template("publicleaderboard.html", guild = guild, leaderboard = leaderboard, autoRanks = autoRanks, client = client)
 
-@app.context_processor
-def inject_channels():
-    allChannels = client.get_all_channels()
-    return dict(allChannels=allChannels) 
-    
-# Starts a seperate thread for the web server 
-# allowing the bot and the webserver to run independantly
+
+# ===== START WEBSERVER THREAD =============================================== #
 webThread = threading.Thread(target=flaskThread)
 try:
     client.run(configFunctions.getBotToken())
