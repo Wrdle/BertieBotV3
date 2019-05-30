@@ -3,3 +3,4 @@ botdatabase.db
 /.vscode/*
 /__pycache__/*
 /config_modules/__pycache__/*
+/.idea/*
