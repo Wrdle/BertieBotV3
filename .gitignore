@@ -6,3 +6,4 @@ botdatabase.db
 ldserverconfig/oServerConfig.json
 ldserverconfig/auditLog.json
 log.log
+/.idea/*
