@@ -3,3 +3,6 @@ botdatabase.db
 /.vscode/*
 /__pycache__/*
 /config_modules/__pycache__/*
+ldserverconfig/oServerConfig.json
+ldserverconfig/auditLog.json
+log.log

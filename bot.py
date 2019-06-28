@@ -2,9 +2,8 @@ import discord
 import os
 import sqlite3
 from discord.ext import commands
-import time
 import threading
-import datetime
+import datetime, time
 from flask import Flask, render_template, request
 
 # CUSTOM
@@ -15,13 +14,13 @@ import config_modules.serverChatLog as serverChatLogConfig
 import config_modules.chatLeaderboard as chatLeaderboardConfig
 import config_modules.welcomeMessages as welcomeMessagesConfig
 
+
 # ===== GLOBAL VARIABLES ===================================================== #
 client = commands.Bot(command_prefix = configFunctions.getCommandPrefix())
 serverid = None
 app = Flask(__name__)
 
-
-# ===== BOT EVENT HANDLERS =================================================== #
+# ===== SETUP FUNCTIONS & CODE  ============================================== #
 
 @client.event
 async def on_ready():
@@ -43,6 +42,10 @@ async def on_ready():
 
     if webThread.isAlive != True:
         webThread.start()
+
+
+
+# ===== BOT EVENT HANDLERS =================================================== #
 
 @client.event
 async def on_message(message):
@@ -136,6 +139,9 @@ async def getRandomWelcomeMessage(ctx):
 def flaskThread():
     app.run(host='0.0.0.0', port=int("8080"))
 
+def getAllChannels():
+    return client.get_guild(serverid).channels
+
 @app.route("/")
 def homePage():
     totalMessagesPastMonth = 0
@@ -143,13 +149,13 @@ def homePage():
     for message in messages:
         if datetime.datetime.now() - datetime.datetime.strptime(message.time, "%d/%m/%y %I:%M%p") < datetime.timedelta(days=30):
             totalMessagesPastMonth += 1
-    return render_template("home.html", client=client, totalMessagesPastMonth=totalMessagesPastMonth)
+    return render_template("home.html", client=client, totalMessagesPastMonth=totalMessagesPastMonth, allChannels=getAllChannels())
 
 @app.route("/channel", methods=['GET'])
 def channelPage():
     channel = client.get_channel(int(request.values.get('channelid')))
     channelLog = serverChatLogConfig.getChannelLog(channel)
-    return render_template("channel.html", client=client, channelLog=channelLog, currentChannel=channel)
+    return render_template("channel.html", client=client, channelLog=channelLog, currentChannel=channel, allChannels=getAllChannels())
 
 @app.route("/memberjoin", methods=['GET', 'POST'])
 def memberJoinPage():
@@ -173,13 +179,13 @@ def memberJoinPage():
         welcomeMessagesConfig.removeMessage(removeMessageID)
 
     allWelcomeMessages = welcomeMessagesConfig.getAllWelcomeMessages()
-    return render_template("memberjoin.html", client=client, allRoles = guild.roles, currentDefaultRole=currentDefaultRole, data=request.values, welcomeMessages=allWelcomeMessages)
+    return render_template("memberjoin.html", client=client, allchannels = getAllChannels(), allRoles = guild.roles, currentDefaultRole=currentDefaultRole, data=request.values, welcomeMessages=allWelcomeMessages)
 
 @app.route("/leaderboard")
 def leaderboardPage():
     leaderboard = chatLeaderboardConfig.loadLeaderboard()
     leaderboard.sort(key = lambda x : x['xp'], reverse=True) 
-    return render_template("leaderboard.html", client = client, leaderboard = leaderboard)
+    return render_template("leaderboard.html", client = client, allChannels=getAllChannels(), leaderboard = leaderboard)
 
 @app.route('/autorank', methods=['GET', 'POST'])
 def autoRankPage():
@@ -206,7 +212,7 @@ def autoRankPage():
                 allRoles.remove(role)
                 autoRank.name = role.name
 
-    return render_template("autorank.html", allRoles = allRoles, currentAutoRanks = currentAutoRanks, client = client)
+    return render_template("autorank.html", client = client, allChannels=getAllChannels(), allRoles = allRoles, currentAutoRanks = currentAutoRanks)
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settingsPage():
@@ -216,7 +222,15 @@ def settingsPage():
             configFunctions.updateWebURL(webURL)
 
     serverConfig = configFunctions.reloadServerConfig()
-    return render_template("settings.html", serverConfig = serverConfig)
+    return render_template("settings.html", client = client, allChannels=getAllChannels(), serverConfig = serverConfig)
+
+@app.route('/processSettings', methods=['POST'])
+def process():
+    webURL = request.form.get('webAddress')
+    if webURL is not None:
+        configFunctions.updateWebURL(webURL)
+
+    serverConfig = configFunctions.reloadServerConfig()
 
 @app.route('/publicleaderboard')
 def publicLeaderboardPage():
@@ -233,11 +247,16 @@ def publicLeaderboardPage():
     for rank in autoRanks:
         autoRanks[autoRanks.index(rank)].role = guild.get_role(rank.rankID)
 
-    return render_template("publicleaderboard.html", guild = guild, leaderboard = leaderboard, autoRanks = autoRanks, client = client)
+    return render_template("publicleaderboard.html", client = client, guild = guild, leaderboard = leaderboard, autoRanks = autoRanks)
 
 
-# ===== START WEBSERVER THREAD =============================================== #
+# ===== START WEBSERVER AND DISCORD THREADS ================================== #
 webThread = threading.Thread(target=flaskThread)
+
+if configFunctions.getBotToken() == None:
+    token = input("No bot token has been set. Enter bot token to continue:\n")
+    configFunctions.setBotToken(token)
+
 try:
     client.run(configFunctions.getBotToken())
 except:

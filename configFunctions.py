@@ -1,4 +1,13 @@
 import json
+import os
+import logging
+
+logger = logging.getLogger('discord')
+logging.basicConfig(level=logging.INFO)
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='log.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 def reloadServerConfig():
     serverConfig = None
@@ -6,7 +15,13 @@ def reloadServerConfig():
         with open('dserverconfig/ServerConfig.json') as f:
             serverConfig = json.load(f)
     except:
-        print('Error opening server config. File may not exist.')
+        logger.info("Either file 'ServerConfig.json' or directory 'dserverconfig'")
+        try:
+            os.makedirs('dserverconfig')
+        except:
+            logger.info("Directory 'dserverconfig', already exists")
+
+        logger.info("Attempting to create file 'dserverconfig/ServerConfig.json'")
         with open ('dserverconfig/ServerConfig.json', 'w+') as f:
             serverConfig = {
                 "defaultRole": None, 
@@ -48,3 +63,8 @@ def getCommandPrefix():
 
 def getBotToken():
     return reloadServerConfig()["token"]
+
+def setBotToken(token):
+    serverConfig = reloadServerConfig()
+    serverConfig["token"] = token
+    saveServerConfig(serverConfig)
