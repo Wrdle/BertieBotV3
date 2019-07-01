@@ -7,3 +7,4 @@ ldserverconfig/oServerConfig.json
 ldserverconfig/auditLog.json
 log.log
 /.idea/*
+static/fonts/custom.ttf

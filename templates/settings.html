@@ -29,6 +29,7 @@
                 $("#submitURL").click(function(e) {
                     $.ajax({
                         data : {
+                            description: 'webAddressUpdate',
                             webAddress : $('#address').val()
                         },
                         type : 'POST',
@@ -39,8 +40,73 @@
                     });
                     e.preventDefault();
                 });
-
             </script>
     </div>
 </div>
+
+    <div class="row">
+        <div class="card col-md-12 shadow mb-4">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold text-primary">Public Leaderboard Title Font</h5>
+            </div>
+            <div class="card-body">
+                <p>Upload a .ttf or .otf file to use as the font for the title text</p>
+                <form method="post" id="uploadFileForm" enctype = "multipart/form-data">
+                    <input type = "file" name = "file" /><br><br>
+                    <input id="submitFile" type="submit" class="btn btn-success"/>
+                    <input id="resetFont" type="submit" value="Reset to default font" class="btn btn-warning"/>
+                </form>
+            </div>
+        </div>
+        <script>
+            $("#submitURL").click(function(e) {
+                $.ajax({
+                    data : {
+                        description: 'webAddressUpdate',
+                        webAddress : $('#address').val()
+                    },
+                    type : 'POST',
+                    url : '/processSettings'
+                })
+                .done(function(data) {
+                    alert("URL updated")
+                });
+                e.preventDefault();
+            });
+
+            $("#resetFont").click(function(e) {
+                $.ajax({
+                    data : {
+                        description: 'resetFont'
+                    },
+                    type : 'POST',
+                    url : '/processSettings'
+                })
+                .done(function(data) {
+                    alert("Font reset")
+                });
+                e.preventDefault();
+            });
+
+            $("#submitFile").click(function(e) {
+                var form = $('#uploadFileForm')
+                console.log(form)
+                var fd = new FormData(form[0])
+
+                e.preventDefault();
+                $.ajax({
+                    paramname: 'file',
+                    type : 'POST',
+                    url : '/uploadFont',
+                    data: fd,
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: false,   // tell jQuery not to set contentType
+                    cache: false
+                })
+                .done(function(data) {
+                        alert("File uploaded")
+                });
+            });
+        </script>
+    </div>
 {% endblock content %}

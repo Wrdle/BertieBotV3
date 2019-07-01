@@ -28,7 +28,8 @@ def reloadServerConfig():
                 "externalDomain": None,
                 "commandPrefix": ".",
                 "token": None,
-                "greetingChannel": None
+                "greetingChannel": None,
+                "publicLeaderboardFont": None
             }
             json.dump(serverConfig, f)
     return serverConfig
@@ -67,4 +68,12 @@ def getBotToken():
 def setBotToken(token):
     serverConfig = reloadServerConfig()
     serverConfig["token"] = token
+    saveServerConfig(serverConfig)
+
+def getPublicLeaderboardFont():
+    return reloadServerConfig()["publicLeaderboardFont"]
+
+def setPublicLeaderboardFont(fontName):
+    serverConfig = reloadServerConfig()
+    serverConfig["publicLeaderboardFont"] = fontName
     saveServerConfig(serverConfig)
