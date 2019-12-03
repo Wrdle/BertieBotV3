@@ -20,6 +20,6 @@ def publicLeaderboardPage():
 
     autoRanks = chatLeaderboard.loadAutoRanks()    
     for rank in autoRanks:
-        autoRanks[autoRanks.index(rank)].role = extraFunctions.getRole(server, str(rank.rankID))
+        autoRanks[autoRanks.index(rank)].role = extraFunctions.getRole(server, rank.rankID)
 
     return render_template("publicleaderboard.html", server = server, leaderboard = leaderboard, autoRanks = autoRanks, client = client)

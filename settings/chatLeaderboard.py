@@ -14,7 +14,7 @@ def loadLeaderboard():
 
 def getMemberXP(member):
     xp = sqlite3.connect('./botdatabase.db').cursor().execute('SELECT xp FROM ChatLeaderboard WHERE userID = {0}'.format(member.id)).fetchone()
-    return xp
+    return xp[0]
 
 def newMessage(member, message):
     serverConfig = configFunctions.reloadServerConfig()
@@ -56,10 +56,10 @@ async def autoRank(member, server, client):
         memberXP = getMemberXP(member)
 
         for rank in ranks:
-            if int(rank['xp']) < memberXP:
-                role = extraFunctions.getRole(server, rank["id"])
+            if rank.xp <= memberXP:
+                role = extraFunctions.getRole(server, rank.rankID)
                 if role not in member.roles:
-                    await client.add_roles(member, role)
+                    await member.add_roles(role, reason = "Auto Rank")
 
 def addNewAutoRank(newAutoRank, newAutoRankXP):
     query = 'INSERT INTO AutoRanks VALUES({},{})'.format(newAutoRank, newAutoRankXP)

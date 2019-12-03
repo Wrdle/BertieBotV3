@@ -81,3 +81,9 @@ def autoRankPage():
                 autoRank.name = role.name
 
     return render_template("autorank.html", extraFunctions = extraFunctions, allRoles = allRoles, currentAutoRanks = currentAutoRanks, client = client, server = server)
+
+@bp.route("/leaderboard")
+def leaderboardPage():
+    leaderboard = chatLeaderboard.loadLeaderboard()
+    leaderboard.sort(key = lambda x : x.xp, reverse=True) 
+    return render_template("leaderboard.html", client = client, leaderboard = leaderboard)
