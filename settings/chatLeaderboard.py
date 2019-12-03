@@ -2,7 +2,7 @@ import json
 import os
 import sqlite3
 
-import config_modules.botDB as botDB
+from . import extraFunctions, botDB, configFunctions
 
 def loadLeaderboard():
     leaderboard = []
@@ -14,12 +14,13 @@ def loadLeaderboard():
 
 def getMemberXP(member):
     xp = sqlite3.connect('./botdatabase.db').cursor().execute('SELECT xp FROM ChatLeaderboard WHERE userID = {0}'.format(member.id)).fetchone()
-    return xp[0]
+    return xp
 
 def newMessage(member, message):
+    serverConfig = configFunctions.reloadServerConfig()
     if member.bot == False:
         if message.content != None:
-            if message.content[0].strip() != '.':
+            if message.content != '' and message.content[0].strip() != serverConfig["commandPrefix"]:
                 conn = sqlite3.connect('./botdatabase.db')
                 sql = conn.cursor()
 
@@ -49,17 +50,16 @@ def loadAutoRanks():
     ranks.sort(key= lambda x : int(x.xp))
     return ranks
     
-async def autoRank(member, guild):
-    if member.bot == False:
-        ranks = loadAutoRanks()
-        if len(ranks) > 0:
-            memberXP = getMemberXP(member)
+async def autoRank(member, server, client):
+    ranks = loadAutoRanks()
+    if len(ranks) > 0:
+        memberXP = getMemberXP(member)
 
-            for rank in ranks:
-                if int(rank.xp) < memberXP:
-                    role = guild.get_role(rank.rankID)
-                    if role not in member.roles:
-                        await member.add_roles(role)
+        for rank in ranks:
+            if int(rank['xp']) < memberXP:
+                role = extraFunctions.getRole(server, rank["id"])
+                if role not in member.roles:
+                    await client.add_roles(member, role)
 
 def addNewAutoRank(newAutoRank, newAutoRankXP):
     query = 'INSERT INTO AutoRanks VALUES({},{})'.format(newAutoRank, newAutoRankXP)

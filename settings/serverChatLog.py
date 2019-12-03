@@ -3,7 +3,7 @@ import sqlite3
 import datetime
 import os
 
-import config_modules.botDB as botDB
+from . import botDB
 
 def newMessage(message):
     message = 'INSERT INTO ChatLog VALUES ({}, {}, {}, "{}", {}, "{}", "{}");'.format(message.id, message.channel.id, message.author.id, message.content, int(message.tts), "Experimental", str(datetime.datetime.now().strftime("%d/%m/%y %I:%M%p")))
@@ -12,15 +12,6 @@ def newMessage(message):
 
 def getChannelLog(channel):
     query = 'SELECT * FROM ChatLog WHERE channelID = {}'.format(channel.id)
-    channelLog = []
-    with botDB.Database() as db:
-        data = db.execute(query)
-        for row in data:
-            channelLog.append(cLogMessage(row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
-    return channelLog
-
-def getAllMessages():
-    query = 'SELECT * FROM ChatLog'
     channelLog = []
     with botDB.Database() as db:
         data = db.execute(query)

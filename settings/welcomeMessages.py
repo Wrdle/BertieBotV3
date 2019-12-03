@@ -1,8 +1,7 @@
-import json
 from random import randint
 from datetime import datetime
 
-import config_modules.botDB as botDB
+from . import botDB
 
 # Adds new Welcome Message to the database 
 def newMessage(message):

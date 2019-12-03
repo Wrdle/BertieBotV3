@@ -1,10 +1,8 @@
-/dserverconfig/*
+/configFiles/*
 botdatabase.db
 /.vscode/*
 /__pycache__/*
-/config_modules/__pycache__/*
-ldserverconfig/oServerConfig.json
-ldserverconfig/auditLog.json
-log.log
-/.idea/*
-static/fonts/custom.ttf
+/cogs/__pycache__/*
+/settings/__pycache__/*
+/website/__pycache__/*
+website/static/fonts/custom.ttf

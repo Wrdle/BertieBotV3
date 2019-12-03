@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
     
     <style>
-        @font-face { font-family: Aurora; src: url('static/fonts/{{fontName}}'); } 
-        @font-face { font-family: Aurora; font-weight: bold; src: url('static/fonts/{{fontName}}');}
+        @font-face { font-family: Aurora; src: url('static/aurora.ttf'); } 
+        @font-face { font-family: Aurora; font-weight: bold; src: url('static/aurora.ttf');}
         body {
             background-color: #282B30;
             color: white;
@@ -67,7 +67,7 @@
 
 <body>
     <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: #202225;">
-        <a class="navbar-brand" href="#">{{guild.name}}</a>
+        <a class="navbar-brand" href="#">{{server.name}}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -121,10 +121,11 @@
             <div class="col-md-4" style="padding-left: 10px;">
                 <div class="sidecolumn-container">
                     <div>
-                        <h4><b>{{guild.name}}</b></h4>
-                        <img src="{{guild.icon_url}}" style="border-radius: 50%;" width="120px">
+                        <h4><b>{{server.name}}</b></h4>
+                        <img src="{{server.icon_url}}" style="border-radius: 50%;" width="120px">
                     </div>
                 </div>
+                {% if autoRanks|length > 0 %}
                 <div class="sidecolumn-container">
                     <div>
                         <h4><b>Role Rewards</b></h4>
@@ -136,6 +137,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
