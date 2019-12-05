@@ -31,7 +31,7 @@
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
         <div class="sidebar-brand-icon rotate-n-15">
-          <i class="fas fa-laugh-wink"></i>
+          <img src="{{ url_for('static', filename='img/logo-coloured.png' )}}" width="50px">
         </div>
         <div class="sidebar-brand-text mx-3">Bertie Bot <sup>Dashboard</div>
       </a>
@@ -110,6 +110,7 @@
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Bot Settings</h6>
             <a class="collapse-item" href="/settings">Settings</a>
+            <a class="collapse-item" href="/botsettings">Bot Settings</a>
             <a class="collapse-item" href="#">Dashboard User Settings</a>
           </div>
         </div>

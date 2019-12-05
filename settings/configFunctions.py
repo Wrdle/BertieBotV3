@@ -32,6 +32,7 @@ def reloadServerConfig():
                 "commandPrefix": ".",
                 "token": None,
                 "greetingChannel": None,
+                "portNumber": 5000,
                 "publicLeaderboardFont": None
             }
             json.dump(serverConfig, f)
@@ -72,6 +73,14 @@ def setBotToken(token):
     serverConfig = reloadServerConfig()
     serverConfig["token"] = token
     saveServerConfig(serverConfig)
+
+def setPortNumber(portNumber):
+    serverConfig = reloadServerConfig()
+    serverConfig["portNumber"] = portNumber
+    saveServerConfig(serverConfig)
+
+def getPortNumber():
+    return reloadServerConfig()["portNumber"]
 
 def getPublicLeaderboardFont():
     return reloadServerConfig()["publicLeaderboardFont"]

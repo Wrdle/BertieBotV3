@@ -5,6 +5,7 @@ import start
 from . import client
 from settings import configFunctions, extraFunctions, welcomeMessages, serverChatLog, chatLeaderboard
 from flask_login import login_required, current_user
+from settings import botDB
 
 bp = Blueprint('adminPanel', __name__)
 
@@ -97,10 +98,11 @@ def leaderboardPage():
 @bp.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settingsPage():
-    if request.method == 'POST':
-        webURL = request.form.get('webAddress')
-        if webURL is not None:
-            configFunctions.updateWebURL(webURL)
-
     serverConfig = configFunctions.reloadServerConfig()
     return render_template("settings.html", serverConfig = serverConfig)
+
+@bp.route('/botsettings', methods=['GET', 'POST'])
+@login_required
+def botSettings():
+    serverConfig = configFunctions.reloadServerConfig()
+    return render_template("botsettings.html", serverConfig = serverConfig)

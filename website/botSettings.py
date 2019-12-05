@@ -43,3 +43,18 @@ def processFontUpload():
         file.save(os.path.join(filename))
         configFunctions.setPublicLeaderboardFont(filename)
         return 'Upload Successful'
+
+@bp.route('/processBotSettings', methods=['POST'])
+def processBotSettings():
+    description = request.form.get('description')
+    if description == 'portNumberUpdate':
+        portNumber = request.form.get('portNumber')
+        if portNumber is not None:
+            configFunctions.setPortNumber(portNumber)
+            return "Port number updated"
+    elif description == 'botTokenUpdate':
+        botToken = request.form.get('botToken')
+        if botToken is not None:
+            configFunctions.setBotToken(botToken)
+            return "Bot token updated"
+

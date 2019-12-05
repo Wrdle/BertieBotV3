@@ -18,8 +18,7 @@ def login():
         user_name = form.username.data
         password = form.password.data
         UserResult = User.get(user_name)
-
-        #elif not check_password_hash(u1.password_hash, password): # takes the hash and password
+        
         # Check if there is user with that name
         if (UserResult is None) or not check_password_hash(UserResult.password, password):
             error='Incorrect user name or password'
