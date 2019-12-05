@@ -1,4 +1,5 @@
 import sqlite3
+from .models import User
 
 class Database(object):
     dbLocation = "botdatabase.db"
@@ -31,3 +32,27 @@ class Database(object):
         else:
             self.connection.commit()
         self.connection.close()
+
+
+# ======= NON RELATED DB FUNCTIONS ======= #
+def loadAllUsers():
+    users = []
+    with Database() as db:
+        data = db.execute('SELECT * FROM USERS;')
+        for row in data:
+            users.append(User(row[0], row[1], row[2]))
+    return users
+
+def getUser(username):
+    with Database() as db:
+        data = db.execute('SELECT * FROM USERS WHERE UPPER(username) = UPPER("{0}") COLLATE NOCASE;'.format(username)).fetchone()
+        if data != None:
+            return User(data[0], data[1], data[2])
+    return None
+
+def getUserWithID(id):
+    with Database() as db:
+        data = db.execute('SELECT * FROM USERS WHERE userID ="{0}";'.format(id)).fetchone()
+        if data != None:
+            return User(data[0], data[1], data[2])
+    return None

@@ -3,7 +3,7 @@ from discord.ext import commands
 import discord
 
 from website import create_app
-from cogs import main
+from cogs import generalCommands, events, leaderboard
 from settings import configFunctions
 
 serverconfig = configFunctions.reloadServerConfig()
@@ -19,7 +19,8 @@ def startWebsite():
 if __name__=='__main__':
     websiteThread = threading.Thread(target=startWebsite)
     websiteThread.start()
-    client.add_cog(main.Main(client))
-    client.add_cog(main.Events(client))
+    client.add_cog(generalCommands.GeneralCommands(client))
+    client.add_cog(events.Events(client))
+    client.add_cog(leaderboard.Leaderboard(client))
     client.run(configFunctions.getBotToken())
 

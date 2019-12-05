@@ -6,3 +6,4 @@ botdatabase.db
 /settings/__pycache__/*
 /website/__pycache__/*
 website/static/fonts/custom.ttf
+LemonMilk.otf

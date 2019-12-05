@@ -5,43 +5,7 @@ from colorama import Fore, Back, Style
 
 import start
 from settings import serverChatLog, chatLeaderboard, configFunctions, welcomeMessages, extraFunctions
-
-class Main(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-    
-    @commands.command()
-    async def join(self, ctx):
-        print(str(ctx))
-
-    @commands.command()
-    async def newWelcomeMessage(self, ctx):
-        welcomeMessages.newMessage(ctx.message.content)
-
-    @commands.command()
-    async def getRandomWelcomeMessage(self, ctx):
-        message = welcomeMessages.getRandomMessage(ctx.message.author)
-        if (message == None):
-            await ctx.message.channel.send("You have not set any welcome messages yet")
-            return
-        await ctx.message.channel.send(message)
-        
-    
-    @commands.command(pass_context=True)
-    async def allroles(self, ctx):
-        message = "Roles: \n"
-        for role in ctx.message.guild.roles:
-            message += role.name + " : " + str(role.id) + "\n"
-        await ctx.message.channel.send(message)
-
-    @commands.command(pass_context=True)
-    async def clear(self, ctx, amount=100):
-        channel = ctx.message.channel
-        messages = []
-        async for message in self.bot.logs_from(channel, limit=int(amount) + 1):
-            messages.append(message)
-        await self.bot.delete_messages(messages)
-        await message.channel.send('Messages deleted')
+from werkzeug.security import generate_password_hash
 
 class Events(commands.Cog):
     def __init__(self, bot):
@@ -69,6 +33,8 @@ class Events(commands.Cog):
             sql.execute("CREATE TABLE ChatLeaderboard (userID integer NOT NULL UNIQUE PRIMARY KEY, xp integer NOT NULL);")
             sql.execute("CREATE TABLE WelcomeMessages (wMessageID integer NOT NULL UNIQUE PRIMARY KEY, creationTime text NOT NULL, content text NOT NULL);")
             sql.execute("CREATE TABLE AutoRanks (roleID integer NOT NULL UNIQUE PRIMARY KEY, xp integer NOT NULL);")
+            sql.execute("CREATE TABLE Users (userID integer NOT NULL UNIQUE PRIMARY KEY, username text NOT NULL UNIQUE, password text NOT NULL)")
+            sql.execute('INSERT INTO Users VALUES ({0}, "{1}", "{2}");'.format(1, "Root", generate_password_hash("password")))
 
             conn.commit()
             sql.close()

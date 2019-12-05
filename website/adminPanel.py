@@ -4,16 +4,19 @@ import json
 import start
 from . import client
 from settings import configFunctions, extraFunctions, welcomeMessages, serverChatLog, chatLeaderboard
+from flask_login import login_required, current_user
 
 bp = Blueprint('adminPanel', __name__)
 
 @bp.route('/')
+@login_required
 def index():
     allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
     return render_template("home.html", client=client, allChannels=allTextChannels)
 
 
 @bp.route("/memberjoin", methods=['GET', 'POST'])
+@login_required
 def memberJoinPage():
     server = client.get_guild(start.serverid)
     serverConfig = configFunctions.reloadServerConfig()
@@ -46,6 +49,7 @@ def memberJoinPage():
     return render_template("memberjoin.html", client=client, allRoles = server.roles, currentDefaultRole=currentDefaultRole, data=request.values, welcomeMessages=allWelcomeMessages)
 
 @bp.route("/channel", methods=['GET'])
+@login_required
 def channelPage():
     allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
     channel = client.get_channel(int(request.values.get('channelid')))
@@ -53,6 +57,7 @@ def channelPage():
     return render_template("channel.html", client=client, channelLog=channelLog, currentChannel=channel, allChannels=allTextChannels)
 
 @bp.route('/autorank', methods=['GET', 'POST'])
+@login_required
 def autoRankPage():
     if request.method == 'POST':
         removeRankID = request.form.get('removeRankID')
@@ -83,7 +88,19 @@ def autoRankPage():
     return render_template("autorank.html", extraFunctions = extraFunctions, allRoles = allRoles, currentAutoRanks = currentAutoRanks, client = client, server = server)
 
 @bp.route("/leaderboard")
+@login_required
 def leaderboardPage():
     leaderboard = chatLeaderboard.loadLeaderboard()
     leaderboard.sort(key = lambda x : x.xp, reverse=True) 
     return render_template("leaderboard.html", client = client, leaderboard = leaderboard)
+
+@bp.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settingsPage():
+    if request.method == 'POST':
+        webURL = request.form.get('webAddress')
+        if webURL is not None:
+            configFunctions.updateWebURL(webURL)
+
+    serverConfig = configFunctions.reloadServerConfig()
+    return render_template("settings.html", serverConfig = serverConfig)
