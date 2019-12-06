@@ -44,4 +44,8 @@ def create_app(discordClient):
     from . import auth
     app.register_blueprint(auth.bp)
 
+    @app.errorhandler(404)
+    def pageNotFound(e):
+        return render_template('404.html'), 404
+
     return app

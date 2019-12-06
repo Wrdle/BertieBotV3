@@ -5,32 +5,12 @@
     <div class="row">
         <div class="card col-md-12 shadow mb-4">
             <div class="card-header py-3">
-                <h5 class="m-0 font-weight-bold text-primary">Auto Role</h5>
-            </div>
-            <div class="card-body">
-               <p>Assigns new users a selected role automatically</p>
-                <form action="" method="post">
-                    <span><b>Role: </b></span>
-                    <select name="autoRole" class="form-control">
-                        {% for role in allRoles %}
-                            <option {% if role == currentDefaultRole %} selected="selected" {% endif %} value="{{role.id}}">{{role.name}}</option>
-                        {% endfor %}
-                    </select>
-                    <br><br>
-                    <input type="submit" class="btn btn-success" name="SaveAutoRole" value="&nbsp; Save &nbsp;">
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="card col-md-12 shadow mb-4">
-            <div class="card-header py-3">
                 <h5 class="m-0 font-weight-bold text-primary">Custom Join Messages</h5>
             </div>
             <div class="card-body">
                 <p>Sets custom random join messages. Use '{*USER*}' to mention new member in join message.</p>
                 <h5><b>Add new message</b></h5>
-                <form action="" method="post">
+                <form action="/joinmessages" method="post">
                     <div class="form-row">
                         <div class="form-group col-md-10">
                             <input type="text" class="form-control" name="newWelcomeMessage" id="joinMessage" placeholder="New join message">

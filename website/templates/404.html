@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link href="https://fonts.googleapis.com/css?family=Indie+Flower&display=swap" rel="stylesheet">
+    <title>404: Page Not Found</title>
+    <style>
+        body {
+            margin: 0px 0px 0px 0px;
+            padding: 0px 0px 0px 0px;
+        }
+        .container {
+            height: 100vh;
+            width: 100vw;
+        }
+        .centered-container {
+            position: relative;
+            top: 39.0%;
+            transform: translateY(-61.0%);
+        }
+        .logo {
+            height: 32px;
+            transform: translateY(-3px);
+        }
+        .errorimg {
+            width: 30%;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        h1 {
+            text-align: center;
+            font-family: 'Indie Flower', cursive;
+        }
+        p, a {
+            text-align: center;
+            font-family: 'Indie Flower', cursive;
+            font-size: 25px;
+        }
+        .flexbox {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .link {
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 18px;
+            color: rgb(35, 72, 235);
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="flexbox">
+            <img src="{{url_for('static', filename='img/logo-coloured.png')}}" class="logo">
+            &nbsp;&nbsp;&nbsp;
+            <h1>Bertie Bot</h1>
+        </div>
+        <div class="centered-container">
+            <img class="errorimg" src="{{url_for('static', filename='img/404.svg')}}"> 
+            <br>
+            <p>It looks like you found a glitch in the matrix...</p>
+            <div class="flexbox"><div><a class="link" href="/">Admin Panel</a></div> &nbsp; | &nbsp; <div><a class="link" href="/serverleaderboard">Server Leaderboard</a></div></div>
+        </div>
+    </div>
+</body>
+</html>
