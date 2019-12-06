@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for
 from flask_bootstrap import Bootstrap
 import threading
 from flask_login import LoginManager
@@ -38,8 +38,8 @@ def create_app(discordClient):
     from . import publicLeaderboard
     app.register_blueprint(publicLeaderboard.bp)
 
-    from . import botSettings
-    app.register_blueprint(botSettings.bp)
+    from . import settingsAPI
+    app.register_blueprint(settingsAPI.bp)
 
     from . import auth
     app.register_blueprint(auth.bp)
@@ -49,3 +49,8 @@ def create_app(discordClient):
         return render_template('404.html'), 404
 
     return app
+
+def isDiscordBotReady():
+    if not client.is_ready():
+        return render_template('notready.html')
+    return True

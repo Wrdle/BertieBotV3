@@ -5,27 +5,12 @@
     <div class="col-md-6">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h5 class="m-0 font-weight-bold text-primary">Website Port Number</h5>
-            </div>
-            <div class="card-body">
-                <p>The port number on which the website will be hosted. Please restart bot after changing this for changes to take affect. If this breaks the bot, you can go into configFiles/ServerConfig.json and change it back.</p>
-                <form method="post">
-                    <input type="number" id="portNumber" name="portNumber" value="{{serverConfig["portNumber"]}}">
-                    <br><br>
-                    <input id="submitPortNumber" type="submit" class="btn btn-success">
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
                 <h5 class="m-0 font-weight-bold text-primary">Bot Token</h5>
             </div>
             <div class="card-body">
                 <p>The token used to connect to the discord API service. Please restart the bot for changes to take affect.</p>
                 <form method="post">
-                    <input type="text" id="#botToken" name="botToken" value="{{serverConfig["token"]}}" style="width:100%;">
+                    <input type="text" id="botToken" name="botToken" value="{{serverConfig["token"]}}" style="width:100%;">
                     <br><br>
                     <input id="sumbitBotToken" type="submit" class="btn btn-success">
                 </form>
@@ -35,29 +20,14 @@
 </div>
 
 <script>
-    $("#submitPortNumber").click(function(e) {
-        $.ajax({
-            data : {
-                description: 'portNumberUpdate',
-                portNumber : $('#portNumber').val()
-            },
-            type : 'POST',
-            url : '/botSettings/processBotSettings'
-        })
-        .done(function(data) {
-            alert("Port Number updated successfully.")
-        });
-        e.preventDefault();
-    });
-
     $("#sumbitBotToken").click(function(e) {
         $.ajax({
             data : {
                 description: 'botTokenUpdate',
-                portNumber : $('#botToken').val()
+                botToken : $('#botToken').val()
             },
             type : 'POST',
-            url : '/botSettings/processBotSettings'
+            url : '/settingsAPI/processBotSettings'
         })
         .done(function(data) {
             alert("Bot token updated successfully.")

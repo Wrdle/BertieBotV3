@@ -6,15 +6,13 @@ from website import create_app
 from cogs import generalCommands, events, leaderboard
 from settings import configFunctions
 
-serverconfig = configFunctions.reloadServerConfig()
-
-client =  commands.Bot(command_prefix=commands.when_mentioned_or(serverconfig["commandPrefix"]), description='Your local BertieBot')
+client =  commands.Bot(command_prefix=commands.when_mentioned_or(configFunctions.getCommandPrefix()), description='Your local BertieBot')
 
 global serverid
 
 def startWebsite():
     napp=create_app(client)
-    napp.run(port=5000)
+    napp.run('0.0.0.0', port=configFunctions.getPortNumber())
 
 if __name__=='__main__':
     websiteThread = threading.Thread(target=startWebsite)

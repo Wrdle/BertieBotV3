@@ -3,44 +3,46 @@
     <!-- Custom styles for this page -->
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <div class="row">
-        <div class="card col-md-12 shadow mb-4">
-            <div class="card-header py-3">
-                <h5 class="m-0 font-weight-bold text-primary">Custom Join Messages</h5>
-            </div>
-            <div class="card-body">
-                <p>Sets custom random join messages. Use '{*USER*}' to mention new member in join message.</p>
-                <h5><b>Add new message</b></h5>
-                <form action="/joinmessages" method="post">
-                    <div class="form-row">
-                        <div class="form-group col-md-10">
-                            <input type="text" class="form-control" name="newWelcomeMessage" id="joinMessage" placeholder="New join message">
+        <div class="col-md-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h5 class="m-0 font-weight-bold text-primary">Custom Join Messages</h5>
+                </div>
+                <div class="card-body">
+                    <p>Sets custom random join messages. Use '{*USER*}' to mention new member in join message.</p>
+                    <h5><b>Add new message</b></h5>
+                    <form action="/joinmessages" method="post">
+                        <div class="form-row">
+                            <div class="form-group col-md-10">
+                                <input type="text" class="form-control" name="newWelcomeMessage" id="joinMessage" placeholder="New join message">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <button type="submit" style="width:100%" class="btn btn-primary">Add Message</button>
+                            </div>
                         </div>
-                        <div class="form-group col-md-2">
-                            <button type="submit" style="width:100%" class="btn btn-primary">Add Message</button>
-                        </div>
+                    </form>
+                    <br>
+                    <h5><b>Current Messages</b></h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Creation Time</th>
+                                    <th>Message</th>
+                                    <th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for message in welcomeMessages %}
+                                <tr>
+                                    <td>{{message.creationTime}}</td>
+                                    <td>{{message.content}}</td>
+                                    <td><form method="post"><button name="removeMessage" value="{{message.wMessageID}}">Remove</button></form></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                </form>
-                <br>
-                <h5><b>Current Messages</b></h5>
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Creation Time</th>
-                                <th>Message</th>
-                                <th>Remove</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for message in welcomeMessages %}
-                            <tr>
-                                <td>{{message.creationTime}}</td>
-                                <td>{{message.content}}</td>
-                                <td><form method="post"><button name="removeMessage" value="{{message.wMessageID}}">Remove</button></form></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>

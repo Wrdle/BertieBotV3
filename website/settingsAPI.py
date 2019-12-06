@@ -6,7 +6,7 @@ import start
 from . import client
 from settings import configFunctions, extraFunctions, welcomeMessages, serverChatLog, chatLeaderboard
 
-bp = Blueprint('botSettings', __name__, url_prefix='/botSettings')
+bp = Blueprint('settingsAPI', __name__, url_prefix='/settingsAPI')
 
 ALLOWED_EXTENSIONS = set(['ttf', 'otf'])
 
@@ -14,8 +14,8 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@bp.route('/processSettings', methods=['POST'])
-def processSettings():
+@bp.route('/processWebsiteSettings', methods=['POST'])
+def processWebsiteSettings():
     description = request.form.get('description')
     if description == "webAddressUpdate":
         webURL = request.form.get('webAddress')
@@ -25,6 +25,11 @@ def processSettings():
     elif description == "resetFont":
         configFunctions.setPublicLeaderboardFont(None)
         return("Font reset")
+    elif description == 'portNumberUpdate':
+        portNumber = request.form.get('portNumber')
+        if portNumber is not None:
+            configFunctions.setPortNumber(portNumber)
+            return "Port number updated"
 
 @bp.route('/uploadFont', methods=['POST'])
 def processFontUpload():
@@ -47,12 +52,7 @@ def processFontUpload():
 @bp.route('/processBotSettings', methods=['POST'])
 def processBotSettings():
     description = request.form.get('description')
-    if description == 'portNumberUpdate':
-        portNumber = request.form.get('portNumber')
-        if portNumber is not None:
-            configFunctions.setPortNumber(portNumber)
-            return "Port number updated"
-    elif description == 'botTokenUpdate':
+    if description == 'botTokenUpdate':
         botToken = request.form.get('botToken')
         if botToken is not None:
             configFunctions.setBotToken(botToken)

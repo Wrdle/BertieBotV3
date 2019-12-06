@@ -2,7 +2,7 @@
 {% block content %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <h5 class="m-0 font-weight-bold text-primary">Website Domain</h5>
@@ -28,10 +28,8 @@
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <h5 class="m-0 font-weight-bold text-primary">Public Leaderboard Title Font</h5>
@@ -46,6 +44,22 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold text-primary">Website Port Number</h5>
+            </div>
+            <div class="card-body">
+                <p>The port number on which the website will be hosted. Please restart bot after changing this for changes to take affect. If this breaks the bot, you can go into configFiles/ServerConfig.json and change it back.</p>
+                <form method="post">
+                    <input type="number" id="portNumber" name="portNumber" value="{{serverConfig["portNumber"]}}">
+                    <br><br>
+                    <input id="submitPortNumber" type="submit" class="btn btn-success">
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -56,7 +70,7 @@
                 webAddress : $('#address').val()
             },
             type : 'POST',
-            url : '/botSettings/processSettings'
+            url : '/settingsAPI/processWebsiteSettings'
         })
         .done(function(data) {
             alert("URL updated")
@@ -70,7 +84,7 @@
                 description: 'resetFont'
             },
             type : 'POST',
-            url : '/botSettings/processSettings'
+            url : '/settingsAPI/processWebsiteSettings'
         })
         .done(function(data) {
             alert("Font reset")
@@ -87,7 +101,7 @@
         $.ajax({
             paramname: 'file',
             type : 'POST',
-            url : '/botSettings/uploadFont',
+            url : '/settingsAPI/uploadFont',
             data: fd,
             processData: false,  // tell jQuery not to process the data
             contentType: false,   // tell jQuery not to set contentType
@@ -96,6 +110,21 @@
         .done(function(data) {
                 alert("File uploaded")
         });
+    });
+
+    $("#submitPortNumber").click(function(e) {
+        $.ajax({
+            data : {
+                description: 'portNumberUpdate',
+                portNumber : $('#portNumber').val()
+            },
+            type : 'POST',
+            url : '/settingsAPI/processWebsiteSettings'
+        })
+        .done(function(data) {
+            alert("Port Number updated successfully.")
+        });
+        e.preventDefault();
     });
 </script>
 {% endblock content %}

@@ -6,12 +6,16 @@ from flask_login import login_user, login_required, logout_user
 from .forms import LoginForm
 from settings.models import User
 from settings import botDB
+from . import isDiscordBotReady
 
 #create blueprint
 bp = Blueprint('auth', __name__)
 
 @bp.route('/login', methods = ['GET', 'POST'])
 def login():
+    status = isDiscordBotReady()
+    if status is not True:
+        return status
     form = LoginForm()
     error=None
     if(form.validate_on_submit()):

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, url_for
 import json
 
 import start
-from . import client
+from . import client, isDiscordBotReady
 from settings import configFunctions, extraFunctions, welcomeMessages, serverChatLog, chatLeaderboard
 from flask_login import login_required, current_user
 from settings import botDB
@@ -12,6 +12,10 @@ bp = Blueprint('adminPanel', __name__)
 @bp.route('/')
 @login_required
 def index():
+    status = isDiscordBotReady()
+    if status is not True:
+        return status
+
     allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
     return render_template("home.html", client=client, allChannels=allTextChannels)
 
@@ -19,6 +23,10 @@ def index():
 @bp.route("/joinmessages", methods=['GET', 'POST'])
 @login_required
 def joinMessages():
+    status = isDiscordBotReady()
+    if status is not True:
+        return status
+
     allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
     #Checks if message sent from website is empty. If its not, add it to WelcomeMessages.json
     message = request.form.get("newWelcomeMessage")
@@ -38,6 +46,10 @@ def joinMessages():
 @bp.route("/channel", methods=['GET'])
 @login_required
 def channelPage():
+    status = isDiscordBotReady()
+    if status is not True:
+        return status
+
     allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
     channel = client.get_channel(int(request.values.get('channelid')))
     channelLog = serverChatLog.getChannelLog(channel)
@@ -47,6 +59,10 @@ def channelPage():
 @bp.route('/ranking', methods=['GET', 'POST'])
 @login_required
 def ranking():
+    status = isDiscordBotReady()
+    if status is not True:
+        return status
+
     serverConfig = configFunctions.reloadServerConfig()
     if request.method == 'POST':
         removeRankID = request.form.get('removeRankID')
@@ -85,23 +101,41 @@ def ranking():
         serverConfig = configFunctions.reloadServerConfig()
     currentDefaultRole = extraFunctions.getRole(server, serverConfig["defaultRole"])
 
-    return render_template("ranking.html", extraFunctions = extraFunctions, allRoles = server.roles, currentDefaultRole=currentDefaultRole, data=request.values, allAvailableRoles = allAvailableRoles, currentAutoRanks = currentAutoRanks, client = client, server = server)
+    allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
+
+    return render_template("ranking.html", extraFunctions = extraFunctions, allRoles = server.roles, currentDefaultRole=currentDefaultRole, allChannels = allTextChannels, data=request.values, allAvailableRoles = allAvailableRoles, currentAutoRanks = currentAutoRanks, client = client, server = server)
 
 @bp.route("/leaderboard")
 @login_required
 def leaderboardPage():
+    status = isDiscordBotReady()
+    if status is not True:
+        return status
+
     leaderboard = chatLeaderboard.loadLeaderboard()
     leaderboard.sort(key = lambda x : x.xp, reverse=True) 
-    return render_template("leaderboard.html", client = client, leaderboard = leaderboard)
 
-@bp.route('/settings', methods=['GET', 'POST'])
+    allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
+    return render_template("leaderboard.html", client = client, allChannels=allTextChannels, leaderboard = leaderboard)
+
+@bp.route('/websitesettings', methods=['GET', 'POST'])
 @login_required
 def settingsPage():
+    status = isDiscordBotReady()
+    if status is not True:
+        return status
+
     serverConfig = configFunctions.reloadServerConfig()
-    return render_template("settings.html", serverConfig = serverConfig)
+    allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
+    return render_template("websitesettings.html", allChannels=allTextChannels, serverConfig = serverConfig)
 
 @bp.route('/botsettings', methods=['GET', 'POST'])
 @login_required
 def botSettings():
+    status = isDiscordBotReady()
+    if status is not True:
+        return status
+
     serverConfig = configFunctions.reloadServerConfig()
-    return render_template("botsettings.html", serverConfig = serverConfig)
+    allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
+    return render_template("botsettings.html", allChannels = allTextChannels, serverConfig = serverConfig)
