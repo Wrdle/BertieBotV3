@@ -34,10 +34,10 @@ def joinMessages():
         welcomeMessages.newMessage(message)
 
     greetingChannel = request.form.get('greetingChannel')
-    if greetingChannel is not None:
-        configFunctions.setGreetingChannelID(int(greetingChannel))
-    else:
+    if greetingChannel == "NoSelectedChannel":
         configFunctions.setGreetingChannelID(None)
+    elif greetingChannel is not None:
+        configFunctions.setGreetingChannelID(int(greetingChannel))
         
     #Checks if user requested to remove a message by checking if ID is empty.
     #If not empty, remove message with ID

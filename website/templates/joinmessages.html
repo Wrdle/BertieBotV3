@@ -14,9 +14,10 @@
                     <form action="/joinmessages" method="post">
                         <div class="form-row">
                             <div class="form-group col-md-10">
-                                <select name="greetingChannel" class="form-control" value={{currentGreetingChannelID}}>
+                                <select name="greetingChannel" class="form-control">
+                                    <option {% if currentGreetingChannelID == None %} selected="selected" {% endif %} value="NoSelectedChannel"><b>None - Will not send greeting messages</b></option>
                                     {% for channel in allChannels %}
-                                        <option value="{{channel.id}}">{{channel.name}}</option>
+                                        <option {% if channel.id == currentGreetingChannelID %} selected="selected" {% endif %} value="{{channel.id}}">{{channel.name}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
