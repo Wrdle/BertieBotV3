@@ -12,7 +12,7 @@
                 <h5><b>Add new auto rank</b></h5>
                 <form action="/ranking" method="POST">
                     <div class="form-row">
-                        <div class="col-md-10">
+                        <div class="col-md-8">
                             <span><b>Role: </b></span>
                             <select name="autoRank" class="form-control">
                                 {% for role in allAvailableRoles %}
@@ -22,7 +22,11 @@
                         </div>
                         <div class="col-md-2">
                             <span><b>XP: </b></span>
-                            <input type="number" class="form-control" name="rankRequiredXP" id="requiredXP">
+                            <input type="number" value=0 class="form-control" name="rankRequiredXP" id="requiredXP">
+                        </div>
+                        <div class="col-md-2">
+                            <span><b>Invites: </b></span>
+                            <input type="number" value=0 class="form-control" name="rankRequiredInvites" id="requiredInvites">
                         </div>
                     </div>
                     <br>
@@ -37,6 +41,7 @@
                                 <th>Rank Name</th>
                                 <th>Rank ID</th>
                                 <th>XP</th>
+                                <th>Invites</th>
                                 <th>Remove</th>
                             </tr>
                         </thead>
@@ -46,6 +51,7 @@
                                 <td>{{rank.name}}</td>
                                 <td>{{rank.rankID}}</td>
                                 <td>{{rank.xp}}</td>
+                                <td>{{rank.invites}}</td>
                                 <td><form method="post"><button name="removeRankID" value="{{rank.rankID}}">Remove</button></form></td>
                             </tr>
                             {% endfor %}

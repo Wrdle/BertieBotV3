@@ -34,12 +34,11 @@ def login():
 
             return redirect(next or url_for('adminPanel.index'))
         else:
-            #flash(error, "danger")
-            print(error)
+            flash(error)
 
         #it comes here when it is a get method
     return render_template('login.html', form=form)
-
+'''
 @bp.route('/register', methods = ['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -58,9 +57,8 @@ def register():
         return redirect(url_for('auth.register'))
     
     return render_template('login.html', pageTitle="Compubay - Register", form=form, heading='Register')
-
+'''
 @bp.route('/logout')
 def logout():
     logout_user()
-    flash("You have been successfully signed out. See you next time :)", "success");
     return redirect(url_for('auth.login'))

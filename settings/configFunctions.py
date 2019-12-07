@@ -63,6 +63,17 @@ def setAutoRole(roleID):
     serverConfig["defaultRole"] = roleID
     saveServerConfig(serverConfig)
 
+def setGreetingChannelID(channelId):
+    serverConfig = reloadServerConfig()
+    if id == None:
+        serverConfig["greetingChannel"] = None
+    else: 
+        serverConfig["greetingChannel"] = id
+    saveServerConfig(serverConfig)
+
+def getGreetingChannelID():
+        return reloadServerConfig()["grettingChannel"]
+
 def getCommandPrefix():
     return reloadServerConfig()["commandPrefix"]
 

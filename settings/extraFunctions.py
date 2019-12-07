@@ -12,3 +12,10 @@ def getAllTextChannels(guild):
         if channel.type.name == 'text':
             channels.append(channel)
     return channels
+
+def getIDFromMention(mention):
+    id = ''
+    for char in mention:
+        if char.isdigit():
+            id += char
+    return int(id)

@@ -32,6 +32,12 @@ def joinMessages():
     message = request.form.get("newWelcomeMessage")
     if message is not None:
         welcomeMessages.newMessage(message)
+
+    greetingChannel = request.form.get('greetingChannel')
+    if greetingChannel is not None:
+        configFunctions.setGreetingChannelID(int(greetingChannel))
+    else:
+        configFunctions.setGreetingChannelID(None)
         
     #Checks if user requested to remove a message by checking if ID is empty.
     #If not empty, remove message with ID
@@ -40,7 +46,8 @@ def joinMessages():
         welcomeMessages.removeMessage(removeMessageID)
 
     allWelcomeMessages = welcomeMessages.getAllWelcomeMessages()
-    return render_template("joinmessages.html", client=client, allChannels=allTextChannels, welcomeMessages = allWelcomeMessages)
+    currentGreetingChannelID = configFunctions.getGreetingChannelID()
+    return render_template("joinmessages.html", client=client, allChannels=allTextChannels, currentGreetingChannelID = currentGreetingChannelID, welcomeMessages = allWelcomeMessages)
 
 
 @bp.route("/channel", methods=['GET'])
@@ -71,8 +78,9 @@ def ranking():
 
         newAutoRank = request.form.get('autoRank')
         newAutoRankXP = request.form.get('rankRequiredXP')
-        if newAutoRank is not None and newAutoRankXP is not None:
-            chatLeaderboard.addNewAutoRank(newAutoRank, newAutoRankXP)
+        newAutoRankInvites = request.form.get('rankRequiredInvites')
+        if newAutoRank is not None and newAutoRankXP is not None and newAutoRankInvites is not None:
+            chatLeaderboard.addNewAutoRank(newAutoRank, newAutoRankXP, newAutoRankInvites)
 
     currentAutoRanks = chatLeaderboard.loadAutoRanks()
     currentAutoRanks.sort(key = lambda x : x.xp, reverse=True)

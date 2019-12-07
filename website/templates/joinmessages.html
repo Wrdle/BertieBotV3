@@ -10,6 +10,21 @@
                 </div>
                 <div class="card-body">
                     <p>Sets custom random join messages. Use '{*USER*}' to mention new member in join message.</p>
+                    <h5><b>Set Greeting Channel</b></h5>
+                    <form action="/joinmessages" method="post">
+                        <div class="form-row">
+                            <div class="form-group col-md-10">
+                                <select name="greetingChannel" class="form-control" value={{currentGreetingChannelID}}>
+                                    {% for channel in allChannels %}
+                                        <option value="{{channel.id}}">{{channel.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <button type="submit" style="width:100%" class="btn btn-primary">Set Greeting Channel</button>
+                            </div>
+                        </div>
+                    </form>
                     <h5><b>Add new message</b></h5>
                     <form action="/joinmessages" method="post">
                         <div class="form-row">

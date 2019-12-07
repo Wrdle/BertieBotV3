@@ -30,10 +30,11 @@ class Events(commands.Cog):
             sql = conn.cursor()
 
             sql.execute('CREATE TABLE ChatLog (messageID integer NOT NULL UNIQUE PRIMARY KEY, channelID integer NOT NULL, userID integer NOT NULL, content text, tts blob, attachments blob, time text NOT NULL);')
-            sql.execute("CREATE TABLE ChatLeaderboard (userID integer NOT NULL UNIQUE PRIMARY KEY, xp integer NOT NULL);")
+            sql.execute("CREATE TABLE ChatLeaderboard (userID integer NOT NULL UNIQUE PRIMARY KEY, xp integer DEFAULT 0);")
             sql.execute("CREATE TABLE WelcomeMessages (wMessageID integer NOT NULL UNIQUE PRIMARY KEY, creationTime text NOT NULL, content text NOT NULL);")
-            sql.execute("CREATE TABLE AutoRanks (roleID integer NOT NULL UNIQUE PRIMARY KEY, xp integer NOT NULL);")
+            sql.execute("CREATE TABLE AutoRanks (roleID integer NOT NULL UNIQUE PRIMARY KEY, xp integer DEFAULT 0, invites integer DEFAULT 0);")
             sql.execute("CREATE TABLE Users (userID integer NOT NULL UNIQUE PRIMARY KEY, username text NOT NULL UNIQUE, password text NOT NULL)")
+            sql.execute("CREATE TABLE Invitations (inviteeMemberID integer NOT NULL UNIQUE PRIMARY KEY, inviterMemberID integer NOT NULL)")
             sql.execute('INSERT INTO Users VALUES ({0}, "{1}", "{2}");'.format(1, "Root", generate_password_hash("password")))
 
             conn.commit()

@@ -35,4 +35,18 @@ class Leaderboard(commands.Cog):
         
         if serverConfig["externalDomain"] is not None:
             em.description += "Leaderboard available at: " + serverConfig['externalDomain'] + ":5000/leaderboard"
-        await ctx.channel.send(embed=em)       
+        await ctx.channel.send(embed=em)
+
+    @commands.command(pass_context=True)   
+    async def invitedBy(self, ctx, mention):
+        if chatLeaderboard.doesInviteEntryExist(ctx.message.author) == True:
+            await ctx.channel.send("Sorry but you have already claimed your invite.")
+        else:
+            inviter = ctx.message.guild.get_member(extraFunctions.getIDFromMention(mention))
+            if inviter.bot is False and inviter != ctx.message.author:
+                chatLeaderboard.addInviteEntry(ctx.message.author, inviter)
+                chatLeaderboard.addMemberXP(inviter, 50)
+                await chatLeaderboard.autoRank(inviter, ctx.guild, self.bot)
+                await ctx.channel.send("Invite claimed :)")
+            else:
+                await ctx.channel.send("Sorry but you cannot claim that person as your inviter.")
