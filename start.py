@@ -6,6 +6,7 @@ from website import create_app
 from cogs import generalCommands, events, leaderboard
 from settings import configFunctions
 
+global client
 client =  commands.Bot(command_prefix=commands.when_mentioned_or(configFunctions.getCommandPrefix()), description='Your local BertieBot')
 
 global serverid

@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 import start
-from settings import serverChatLog, chatLeaderboard, configFunctions, welcomeMessages, extraFunctions
+from settings import fancyStats, serverChatLog, chatLeaderboard, configFunctions, welcomeMessages, extraFunctions
 
 class GeneralCommands(commands.Cog):
     def __init__(self, bot):
@@ -31,3 +31,15 @@ class GeneralCommands(commands.Cog):
             messages.append(message)
         await self.bot.delete_messages(messages)
         await message.channel.send('Messages deleted')
+
+    @commands.command(pass_context=True)
+    async def updateStats(self, ctx):
+        await fancyStats.updateFancyStats(self.bot)
+
+    @commands.command(pass_context=True)
+    async def enableChannelStat(self, ctx, statType):
+        await fancyStats.enableChannelStat(self.bot, ctx.guild, statType)
+
+    @commands.command(pass_context=True)
+    async def disableChannelStat(self, ctx, statType):
+        await fancyStats.disableChannelStat(self.bot, ctx.guild, statType)

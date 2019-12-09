@@ -4,7 +4,7 @@ import os, sys
 from colorama import Fore, Back, Style
 
 import start
-from settings import serverChatLog, chatLeaderboard, configFunctions, welcomeMessages, extraFunctions
+from settings import guildStats, databaseMigrator, serverChatLog, chatLeaderboard, configFunctions, welcomeMessages, extraFunctions
 from werkzeug.security import generate_password_hash
 
 class Events(commands.Cog):
@@ -35,10 +35,16 @@ class Events(commands.Cog):
             sql.execute("CREATE TABLE AutoRanks (roleID integer NOT NULL UNIQUE PRIMARY KEY, xp integer DEFAULT 0, invites integer DEFAULT 0);")
             sql.execute("CREATE TABLE Users (userID integer NOT NULL UNIQUE PRIMARY KEY, username text NOT NULL UNIQUE, password text NOT NULL)")
             sql.execute("CREATE TABLE Invitations (inviteeMemberID integer NOT NULL UNIQUE PRIMARY KEY, inviterMemberID integer NOT NULL)")
+            sql.execute('CREATE TABLE DailyMemberCountStats(Date text NOT NULL UNIQUE PRIMARY KEY, MemberCount integer NOT NULL);')
             sql.execute('INSERT INTO Users VALUES ({0}, "{1}", "{2}");'.format(1, "Root", generate_password_hash("password")))
+            sql.execute('PRAGMA user_version = 1;')
 
             conn.commit()
             sql.close()
+            
+        databaseMigrator.checkAndRunMigration()
+
+        guildStats.startStatisticsDaemon(self.bot)
 
     @commands.Cog.listener()
     async def on_message(self, message):
