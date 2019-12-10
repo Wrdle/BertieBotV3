@@ -2,7 +2,10 @@ from flask import Flask, render_template, url_for
 from flask_bootstrap import Bootstrap
 import threading
 from flask_login import LoginManager
+import asyncio
 
+global flaskLoop
+flaskLoop = asyncio.get_event_loop()
 app=Flask(__name__)
 
 def create_app(discordClient):
@@ -40,6 +43,9 @@ def create_app(discordClient):
 
     from . import settingsAPI
     app.register_blueprint(settingsAPI.bp)
+
+    from . import fancyStatsAPI
+    app.register_blueprint(fancyStatsAPI.bp)
 
     from . import auth
     app.register_blueprint(auth.bp)

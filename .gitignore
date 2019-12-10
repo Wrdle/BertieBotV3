@@ -7,3 +7,5 @@ botdatabase.db
 /website/__pycache__/*
 website/static/fonts/custom.ttf
 LemonMilk.otf
+website/static/img/CSSGlitchEffect.zip
+website/static/img/.zip

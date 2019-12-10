@@ -2,9 +2,12 @@ from discord.ext import commands
 import sqlite3
 import os, sys
 from colorama import Fore, Back, Style
+import threading 
+from time import sleep
+import asyncio
 
 import start
-from settings import guildStats, databaseMigrator, serverChatLog, chatLeaderboard, configFunctions, welcomeMessages, extraFunctions
+from settings import repeatedTimer, fancyStats, guildStats, databaseMigrator, serverChatLog, chatLeaderboard, configFunctions, welcomeMessages, extraFunctions
 from werkzeug.security import generate_password_hash
 
 class Events(commands.Cog):
@@ -41,10 +44,13 @@ class Events(commands.Cog):
 
             conn.commit()
             sql.close()
-            
+
         databaseMigrator.checkAndRunMigration()
 
         guildStats.startStatisticsDaemon(self.bot)
+        self.fancyStatsThread = threading.Thread(await startFancyStatsThread(self.bot, self.bot.get_guild(start.serverid)))
+        self.fancyStatsThread.start()
+
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -70,3 +76,8 @@ class Events(commands.Cog):
             if member.dm_channel == None:
                 await member.create_dm()
             await member.dm_channel.send("There was an error adding the default role to a newly joined server member. Please login to the web panel and ensure that the role you have chosen still exists")
+
+async def startFancyStatsThread(client, guild):
+    while True:
+        await fancyStats.updateFancyStats(client, guild)
+        await asyncio.sleep(5)

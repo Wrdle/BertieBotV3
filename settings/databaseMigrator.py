@@ -1,6 +1,6 @@
 import traceback
 
-LATEST_USER_VERSION = 2
+LATEST_USER_VERSION = 3
 
 from . import botDB
 
@@ -31,6 +31,20 @@ def checkAndRunMigration():
                     # Update Version
                     db.execute('PRAGMA user_version = 2;')
                     currentVersion = 2
+                if currentVersion == 2:
+                    # Changes
+                    db.execute('INSERT INTO fancyStats (statType, enabled) VALUES("Role Count", 0);')
+                    db.execute('INSERT INTO fancyStats (statType, enabled) VALUES("Bot Count", 0);')
+                    db.execute('INSERT INTO fancyStats (statType, enabled) VALUES("User Count", 0);')
+                    db.execute('INSERT INTO fancyStats (statType, enabled) VALUES("Admin Count", 0);')
+                    db.execute('INSERT INTO fancyStats (statType, enabled) VALUES("Online Count", 0);')
+                    db.execute('INSERT INTO fancyStats (statType, enabled) VALUES("Offline Count", 0);')
+
+                    # Update Version
+                    db.execute('PRAGMA user_version = 3;')
+                    currentVersion = 3
+
+            db.execute("COMMIT;")
 
         except:
             db.execute("ROLLBACK;") # Rollback any changes to last known good state before transactions started

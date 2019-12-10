@@ -147,3 +147,13 @@ def botSettings():
     serverConfig = configFunctions.reloadServerConfig()
     allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
     return render_template("botsettings.html", allChannels = allTextChannels, serverConfig = serverConfig)
+
+@bp.route('/fancyStats', methods=['GET', 'POST'])
+@login_required
+def fancyStats():
+    status = isDiscordBotReady()
+    if status is not True:
+        return status
+
+    allTextChannels = extraFunctions.getAllTextChannels(client.get_guild(start.serverid))
+    return render_template("fancystats.html", client = client, allChannels = allTextChannels)

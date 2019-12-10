@@ -34,7 +34,7 @@ class GeneralCommands(commands.Cog):
 
     @commands.command(pass_context=True)
     async def updateStats(self, ctx):
-        await fancyStats.updateFancyStats(self.bot)
+        await fancyStats.updateFancyStats(self.bot, ctx.guild)
 
     @commands.command(pass_context=True)
     async def enableChannelStat(self, ctx, statType):
