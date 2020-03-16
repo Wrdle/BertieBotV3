@@ -1,3 +1,6 @@
+# PLEASE NOTE
+This is the old BertieBot project. BertieBot is no longer self hostable but instead is now hosted by myself and is accessible from https://bertiebot.access.ly. However not yet available for public use. 
+
 # BertieBotV3
 BertieBot V3 is the latest version of Bertie Bot project, with the main goal being a discord bot with a interactive web interface that allows the user to set bot settings, see chat logs and more. This project is still heavily in alpha stages and is very buggy.
 
